@@ -59,7 +59,7 @@ namespace ProjectPatiKuti
         public void dash()
         {
             pelaaja.Push(pelaajanNopeus * 100);
-            Timer.SingleShot(0.2, () => pelaaja.Velocity = pelaajanNopeus,);
+            Timer.SingleShot(0.2, () => pelaaja.Velocity = pelaajanNopeus);
         }
         private void liiku(Vector nopeus)
         {
