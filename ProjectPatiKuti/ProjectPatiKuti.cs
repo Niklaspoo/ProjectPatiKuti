@@ -31,6 +31,18 @@ namespace ProjectPatiKuti
             pelaaja.Position = new Vector(0, 0);
             Add(pelaaja);
             lisaaOhjaimet();
+            luoReunat();
+        }
+        private void luoReunat()
+        {
+            PhysicsObject reuna1 = Level.CreateLeftBorder();
+            reuna1.Restitution = 0.0;
+            PhysicsObject reuna2 = Level.CreateRightBorder();
+            reuna2.Restitution = 0.0;
+            PhysicsObject reuna3 = Level.CreateTopBorder();
+            reuna3.Restitution = 0.0;
+            PhysicsObject reuna4 = Level.CreateBottomBorder();
+            reuna4.Restitution = 0.0;
         }
         private void lisaaOhjaimet()
         {
@@ -42,8 +54,13 @@ namespace ProjectPatiKuti
             Keyboard.Listen(Key.S, ButtonState.Released, liiku, "move", new Vector(0, 500));
             Keyboard.Listen(Key.A, ButtonState.Pressed, liiku, "move", new Vector(-500, 0));
             Keyboard.Listen(Key.A, ButtonState.Released, liiku, "move", new Vector(500, 0));
+            Keyboard.Listen(Key.Space, ButtonState.Pressed, dash, "dash");
         }
-
+        public void dash()
+        {
+            pelaaja.Push(pelaajanNopeus * 100);
+            Timer.SingleShot(0.2, () => pelaaja.Velocity = pelaajanNopeus,);
+        }
         private void liiku(Vector nopeus)
         {
             if ((Math.Abs(pelaajanNopeus.X) == 250) && (Math.Abs(pelaajanNopeus.Y) == 250))
