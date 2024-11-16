@@ -20,14 +20,16 @@ namespace ProjectPatiKuti
         private PhysicsObject vihu;
         private bool kuolematon = false;
         private bool canDash = true;
-        private bool i;
+        private bool i = true;
         private Image blazoid = LoadImage("blazoid");
+        private Image bobble = LoadImage("bobble");
         public override void Begin()
         {
             Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Exit PPK");
             luoPelaaja();
             luoVihu();
             
+
         }
         private void luoVihu()
         {
@@ -45,7 +47,9 @@ namespace ProjectPatiKuti
             Add(vihu);
             
             vihu.Add(ase);
-            
+            Timer.CreateAndStart(1, delegate { ase.Shoot(); });
+            ase.ProjectileCollision = AmmusOsui;
+
         }
         
 
@@ -56,9 +60,12 @@ namespace ProjectPatiKuti
             pelaaja.Color = Color.Red;
             pelaaja.Velocity = pelaajanNopeus;
             pelaaja.Position = new Vector(0, 0);
+            pelaaja.Image = bobble;
+            pelaaja.CanRotate = false;
             Add(pelaaja);
             lisaaOhjaimet();
             luoReunat();
+            
         }
         private void luoReunat()
         {
@@ -81,11 +88,26 @@ namespace ProjectPatiKuti
             Keyboard.Listen(Key.S, ButtonState.Released, liiku, "move", new Vector(0, 500));
             Keyboard.Listen(Key.A, ButtonState.Pressed, liiku, "move", new Vector(-500, 0));
             Keyboard.Listen(Key.A, ButtonState.Released, liiku, "move", new Vector(500, 0));
-            Keyboard.Listen(Key.W, ButtonState.Down, tahtaa , "");
+            Keyboard.Listen(Key.W, ButtonState.Down, tahtaa, "");
             Keyboard.Listen(Key.A, ButtonState.Down, tahtaa, "");
             Keyboard.Listen(Key.S, ButtonState.Down, tahtaa, "");
             Keyboard.Listen(Key.D, ButtonState.Down, tahtaa, "");
             Keyboard.Listen(Key.Space, ButtonState.Pressed, dash, "dash");
+
+        }
+        void AmmusOsui(PhysicsObject ammus, PhysicsObject kohde)
+        {
+            ammus.Destroy();
+            if (kohde==pelaaja)
+            {
+                if (kuolematon)
+                {
+                    return;
+                }
+                pelaaja.Destroy();
+                Begin();
+
+            }
         }
         private void tahtaa()
         {
@@ -117,5 +139,4 @@ namespace ProjectPatiKuti
             pelaaja.Velocity = pelaajanNopeus;
         }
     }
-
 }
