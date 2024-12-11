@@ -28,7 +28,7 @@ namespace ProjectPatiKuti
             Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Exit PPK");
             luoPelaaja();
             luoVihu();
-            
+            canDash = true;
 
         }
         private void luoVihu()
@@ -105,6 +105,7 @@ namespace ProjectPatiKuti
                     return;
                 }
                 pelaaja.Destroy();
+                ClearAll();
                 Begin();
 
             }
