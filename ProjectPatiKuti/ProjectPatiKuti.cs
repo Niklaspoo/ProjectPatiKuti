@@ -22,7 +22,7 @@ namespace ProjectPatiKuti
         private bool canDash = true;
         private bool i = true;
         private Image blazoid = LoadImage("blazoid");
-        private Image bobble = LoadImage("bobble");
+        private Image bobble = LoadImage("bobble1");
         public override void Begin()
         {
             Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Exit PPK");
@@ -55,7 +55,7 @@ namespace ProjectPatiKuti
 
         public void luoPelaaja()
         {
-            pelaaja = new PhysicsObject(40, 40); 
+            pelaaja = new PhysicsObject(41, 55); 
             pelaaja.Shape = Shape.Circle;
             pelaaja.Color = Color.Red;
             pelaaja.Velocity = pelaajanNopeus;
