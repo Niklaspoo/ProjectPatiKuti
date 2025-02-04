@@ -27,6 +27,7 @@ namespace ProjectPatiKuti
         private int vihuHp = 0;
         private int vihujaHengissä = 0;
         private int vihuCount = 0;
+
         public override void Begin()
         {
             Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Exit PPK");
@@ -34,7 +35,8 @@ namespace ProjectPatiKuti
             luoVihu();
             luoVihu();
             canDash = true;
-
+            MediaPlayer.Play("PPK_Sountrack_Vol_1__BGPMLBT_Bullets_Go_Past_Me_Like_Bullet_Trains");
+            MediaPlayer.IsRepeating = true;
         }
         private void luoVihu()
         {
@@ -105,7 +107,7 @@ namespace ProjectPatiKuti
             Keyboard.Listen(Key.D, ButtonState.Down, vihuTahtaa, "");
             Mouse.Listen(MouseButton.Left, ButtonState.Pressed, ammu, "fire", 0);
             Mouse.ListenMovement(0.1, tahtaa, "aim");
-
+            Mouse.ListenMovement(0.1, vihuTahtaa, "aim");
             Keyboard.Listen(Key.Space, ButtonState.Pressed, dash, "dash");
 
 
@@ -127,7 +129,7 @@ namespace ProjectPatiKuti
                 {
                     vihuCount = 0;
                     wave += 1;
-                    while (vihuCount < wave + 5)
+                    while (vihuCount < wave + 2)
                     {
                         luoVihu();
                     }
@@ -143,7 +145,7 @@ namespace ProjectPatiKuti
                 {
                     return;
                 }
-                pelaaja.Destroy();
+                pelaaja.Destroy(); 
                 ResetGameState();
                 ClearAll();
                 Begin();
