@@ -27,16 +27,32 @@ namespace ProjectPatiKuti
         private int vihuHp = 0;
         private int vihujaHengissä = 0;
         private int vihuCount = 0;
-
+        private Image maasto = LoadImage("Maasto");
         public override void Begin()
         {
-            Keyboard.Listen(Key.Escape, ButtonState.Pressed, ConfirmExit, "Exit PPK");
+            MultiSelectWindow aloitus = new MultiSelectWindow("ProjectPK", "Start a new run", "QUIT");
+            aloitus.AddItemHandler(0, aloitaPeli);
+            aloitus.AddItemHandler(1, Exit);
+            Add(aloitus);
+        }
+        public void aloitaPeli()
+        {
+            
             luoPelaaja();
+            pelaajanNopeus = new Vector(0, 0);
+            pelaaja.Velocity = pelaajanNopeus;
+            Camera.Follow(pelaaja);
             luoVihu();
             luoVihu();
             canDash = true;
             MediaPlayer.Play("PPK_Sountrack_Vol_1__BGPMLBT_Bullets_Go_Past_Me_Like_Bullet_Trains");
             MediaPlayer.IsRepeating = true;
+            Level.Background.Image = maasto;
+            Level.Background.TileToLevel();
+            Keyboard.Listen(Key.Escape, ButtonState.Pressed, delegate 
+            {
+                
+            }, "Menu");
         }
         private void luoVihu()
         {
@@ -44,17 +60,18 @@ namespace ProjectPatiKuti
             vihu = new PhysicsObject(40, 40);
             vihu.Shape = Shape.Circle;
             vihu.Color = Color.Red;
+            vihu.Image = blazoid;
             vihu.Tag = "vihu";
-            AssaultRifle ase = new AssaultRifle(30, 30); // Create a new instance of AssaultRifle
+            AssaultRifle ase = new AssaultRifle(30, 30);
             
-
+            
             vihu.Position = RandomGen.NextVector(pelaaja.X + pelaaja.Y, 400);
             ase.X = vihu.X;
             ase.Y = vihu.Y;
             ase.Tag = "weapon";
             vihu.CanRotate = false;
             Add(vihu);
-            vihu.Add(ase); // Add the AssaultRifle to the enemy
+            vihu.Add(ase);
             vihuCount += 1;
             vihujaHengissä += 1;
             
@@ -70,6 +87,7 @@ namespace ProjectPatiKuti
             pelaaja.Color = Color.Blue;
             pelaaja.Velocity = pelaajanNopeus;
             pelaaja.Position = new Vector(0, 0);
+            pelaaja.Image = bobble;
             //pelaaja.Image = bobble;
             pelaaja.CanRotate = false;
             fireball = new Cannon(0, 0);
@@ -82,14 +100,10 @@ namespace ProjectPatiKuti
         }
         private void luoReunat()
         {
-            PhysicsObject reuna1 = Level.CreateLeftBorder();
-            reuna1.Restitution = 0.0;
-            PhysicsObject reuna2 = Level.CreateRightBorder();
-            reuna2.Restitution = 0.0;
-            PhysicsObject reuna3 = Level.CreateTopBorder();
-            reuna3.Restitution = 0.0;
-            PhysicsObject reuna4 = Level.CreateBottomBorder();
-            reuna4.Restitution = 0.0;
+            
+            Level.Size = new Vector(10000, 10000);
+            Level.CreateBorders(0,true);
+            
         }
         private void lisaaOhjaimet()
         {
@@ -109,10 +123,19 @@ namespace ProjectPatiKuti
             Mouse.ListenMovement(0.1, tahtaa, "aim");
             Mouse.ListenMovement(0.1, vihuTahtaa, "aim");
             Keyboard.Listen(Key.Space, ButtonState.Pressed, dash, "dash");
-
-
+            Keyboard.Listen(Key.Escape, ButtonState.Pressed, menu, "menu");
         }
-
+       
+        public void menu()
+        {
+            ClearControls();
+            IsPaused = true;
+            pelaaja.Velocity = new Vector(0, 0);
+            MultiSelectWindow menu = new MultiSelectWindow("Menu", "Resume", "Quit");
+            menu.AddItemHandler(0, delegate { IsPaused = false; lisaaOhjaimet(); });
+            menu.AddItemHandler(1, Exit);
+            Add(menu);
+        }
         private void ammu(int suunta)
         {
             fireball.Shoot();
@@ -129,6 +152,7 @@ namespace ProjectPatiKuti
                 {
                     vihuCount = 0;
                     wave += 1;
+
                     while (vihuCount < wave + 2)
                     {
                         luoVihu();
@@ -147,6 +171,8 @@ namespace ProjectPatiKuti
                 }
                 pelaaja.Destroy(); 
                 ResetGameState();
+                ClearAll();
+                ClearAll();
                 ClearAll();
                 Begin();
 
