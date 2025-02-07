@@ -23,6 +23,12 @@
       <None Update="Content\bobble1.png">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Update="Content\kompassi.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Content\Maasto.jpg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
       <None Update="Content\Maasto.png">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>

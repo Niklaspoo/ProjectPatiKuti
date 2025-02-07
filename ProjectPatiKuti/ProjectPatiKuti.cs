@@ -16,20 +16,23 @@ namespace ProjectPatiKuti
     {
         private AssaultRifle ase;
         private Cannon fireball;
-        private Vector pelaajanNopeus = new Vector(0, 0); 
+        private Vector pelaajanNopeus = new Vector(0, 0);
         private PhysicsObject pelaaja;
         private PhysicsObject vihu;
         private bool kuolematon = false;
         private bool canDash = true;
         private Image blazoid = LoadImage("blazoid");
-        private Image bobble = LoadImage("bobble1");
+        private Image bobble = LoadImage("bobble");
         private int wave = 1;
         private int vihuHp = 0;
         private int vihujaHengiss‰ = 0;
         private int vihuCount = 0;
-        private Image maasto = LoadImage("Maasto");
+        private Image maasto = LoadImage("Maasto.jpg");
+        private Image kompassikuva = LoadImage("kompassi");
+        private DoubleMeter vihujaNyt;
         public override void Begin()
         {
+            IsFullScreen = true;
             MultiSelectWindow aloitus = new MultiSelectWindow("ProjectPK", "Start a new run", "QUIT");
             aloitus.AddItemHandler(0, aloitaPeli);
             aloitus.AddItemHandler(1, Exit);
@@ -37,11 +40,12 @@ namespace ProjectPatiKuti
         }
         public void aloitaPeli()
         {
-            
+
             luoPelaaja();
             pelaajanNopeus = new Vector(0, 0);
             pelaaja.Velocity = pelaajanNopeus;
             Camera.Follow(pelaaja);
+            pelaaja.Position = new Vector(0, 0);
             luoVihu();
             luoVihu();
             canDash = true;
@@ -49,23 +53,37 @@ namespace ProjectPatiKuti
             MediaPlayer.IsRepeating = true;
             Level.Background.Image = maasto;
             Level.Background.TileToLevel();
-            Keyboard.Listen(Key.Escape, ButtonState.Pressed, delegate 
-            {
-                
-            }, "Menu");
+            kompassi();
+            LuoVihuLaskuri();
+        }
+        void LuoVihuLaskuri()
+        {
+            vihujaNyt = new DoubleMeter(vihujaHengiss‰);
+            vihujaNyt.MaxValue = vihuCount;
+            ProgressBar vihujapalkki = new ProgressBar(150, 20);
+            vihujapalkki.X = (Screen.Width/2)-150;
+            vihujapalkki.Y = Screen.Top - 20;
+            vihujapalkki.Angle= Angle.StraightAngle;
+            vihujapalkki.BindTo(vihujaNyt);
+            Add(vihujapalkki);
         }
         private void luoVihu()
         {
             vihuHp = wave * 1;
-            vihu = new PhysicsObject(40, 40);
+            vihu = new PhysicsObject(80, 80);
             vihu.Shape = Shape.Circle;
             vihu.Color = Color.Red;
             vihu.Image = blazoid;
             vihu.Tag = "vihu";
             AssaultRifle ase = new AssaultRifle(30, 30);
-            
-            
-            vihu.Position = RandomGen.NextVector(pelaaja.X + pelaaja.Y, 400);
+            Vector syntym‰Paikka;
+            do
+            {
+                double x = RandomGen.NextDouble(Level.Left + 100, Level.Right - 100);
+                double y = RandomGen.NextDouble(Level.Bottom + 100, Level.Top - 100);
+                syntym‰Paikka = new Vector(x, y);
+            } while (Vector.Distance(syntym‰Paikka, pelaaja.Position) < 500);
+            vihu.Position = syntym‰Paikka;
             ase.X = vihu.X;
             ase.Y = vihu.Y;
             ase.Tag = "weapon";
@@ -74,15 +92,20 @@ namespace ProjectPatiKuti
             vihu.Add(ase);
             vihuCount += 1;
             vihujaHengiss‰ += 1;
-            
+
             Timer.CreateAndStart(1, delegate { ase.Shoot(); });
             ase.ProjectileCollision = AmmusOsui;
+            FollowerBrain vihunAivot = new FollowerBrain(pelaaja);
+            vihunAivot.DistanceFar = 1000;
+            vihunAivot.FarBrain = new RandomMoverBrain();
+            vihunAivot.Speed = 100;
+            vihu.Brain = vihunAivot;
         }
-        
+
 
         public void luoPelaaja()
         {
-            pelaaja = new PhysicsObject(41, 55); 
+            pelaaja = new PhysicsObject(64, 85);
             pelaaja.Shape = Shape.Circle;
             pelaaja.Color = Color.Blue;
             pelaaja.Velocity = pelaajanNopeus;
@@ -94,16 +117,17 @@ namespace ProjectPatiKuti
             Add(pelaaja);
             pelaaja.Add(fireball);
             fireball.ProjectileCollision = fireballOsui;
+
             lisaaOhjaimet();
             luoReunat();
-            
+
         }
         private void luoReunat()
         {
-            
+
             Level.Size = new Vector(10000, 10000);
-            Level.CreateBorders(0,true);
-            
+            Level.CreateBorders(0, true);
+
         }
         private void lisaaOhjaimet()
         {
@@ -125,12 +149,13 @@ namespace ProjectPatiKuti
             Keyboard.Listen(Key.Space, ButtonState.Pressed, dash, "dash");
             Keyboard.Listen(Key.Escape, ButtonState.Pressed, menu, "menu");
         }
-       
+
         public void menu()
         {
             ClearControls();
             IsPaused = true;
             pelaaja.Velocity = new Vector(0, 0);
+            pelaajanNopeus = new Vector(0, 0);
             MultiSelectWindow menu = new MultiSelectWindow("Menu", "Resume", "Quit");
             menu.AddItemHandler(0, delegate { IsPaused = false; lisaaOhjaimet(); });
             menu.AddItemHandler(1, Exit);
@@ -138,7 +163,13 @@ namespace ProjectPatiKuti
         }
         private void ammu(int suunta)
         {
-            fireball.Shoot();
+            PhysicsObject kuti = fireball.Shoot();
+            if (kuti != null)
+            {
+                kuti.Size *= 4;
+                //ammus.Image = ...
+                //ammus.MaximumLifetime = TimeSpan.FromSeconds(2.0);
+            }
         }
 
         void fireballOsui(PhysicsObject fireball, PhysicsObject kohde)
@@ -148,6 +179,7 @@ namespace ProjectPatiKuti
             {
                 kohde.Destroy();
                 vihujaHengiss‰ -= 1;
+                vihujaNyt.Value = vihujaHengiss‰;
                 if (vihujaHengiss‰ == 0)
                 {
                     vihuCount = 0;
@@ -156,6 +188,7 @@ namespace ProjectPatiKuti
                     while (vihuCount < wave + 2)
                     {
                         luoVihu();
+                        LuoVihuLaskuri();
                     }
                 }
             }
@@ -163,13 +196,13 @@ namespace ProjectPatiKuti
         void AmmusOsui(PhysicsObject ammus, PhysicsObject kohde)
         {
             ammus.Destroy();
-            if (kohde==pelaaja)
+            if (kohde == pelaaja)
             {
                 if (kuolematon)
                 {
                     return;
                 }
-                pelaaja.Destroy(); 
+                pelaaja.Destroy();
                 ResetGameState();
                 ClearAll();
                 ClearAll();
@@ -205,13 +238,13 @@ namespace ProjectPatiKuti
 
         public void dash()
         {
-            if(!canDash) return;
+            if (!canDash) return;
             canDash = false;
-            pelaaja.Push(pelaajanNopeus * 100);
+            pelaaja.Push(pelaajanNopeus * 200);
             kuolematon = true;
             Timer.SingleShot(0.2, () => pelaaja.Velocity = pelaajanNopeus);
-            Timer.SingleShot(0.2, () => kuolematon=false);
-            Timer.SingleShot(1, () => canDash=true);      
+            Timer.SingleShot(0.2, () => kuolematon = false);
+            Timer.SingleShot(1, () => canDash = true);
         }
         private void liiku(Vector nopeus)
         {
@@ -225,6 +258,41 @@ namespace ProjectPatiKuti
                 pelaajanNopeus = pelaajanNopeus / 2;
             }
             pelaaja.Velocity = pelaajanNopeus;
+        }
+        private void kompassi()
+        {
+            Widget kompassi = new Widget(100, 100);
+            kompassi.Image = kompassikuva;
+            Add(kompassi);
+            kompassi.Position = new Vector(Screen.Left + 100, Screen.Top - 100);
+
+            Timer.SingleShot(0.1, () => p‰ivit‰Kompassi(kompassi));
+        }
+        private void p‰ivit‰Kompassi(Widget kompassi)
+        {
+            GameObject l‰hinVihu = lˆyd‰L‰hinVihu();
+            if (l‰hinVihu != null)
+            {
+                Vector suunta = (l‰hinVihu.Position - pelaaja.Position).Normalize();
+                kompassi.Angle = suunta.Angle;
+            }
+            Timer.SingleShot(0.1, () => p‰ivit‰Kompassi(kompassi));
+
+        }
+        private GameObject lˆyd‰L‰hinVihu()
+        {
+            GameObject l‰hinVihu = null;
+            double l‰hinEt‰isyys = double.MaxValue;
+            foreach (var vihu in GetObjectsWithTag("vihu"))
+            {
+                double et‰isyys = (vihu.Position - pelaaja.Position).Magnitude;
+                if (et‰isyys < l‰hinEt‰isyys)
+                {
+                    l‰hinEt‰isyys = et‰isyys;
+                    l‰hinVihu = vihu;
+                }
+            }
+            return l‰hinVihu;
         }
     }
 }
