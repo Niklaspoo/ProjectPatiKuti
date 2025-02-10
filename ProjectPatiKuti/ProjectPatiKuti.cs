@@ -30,7 +30,9 @@ namespace ProjectPatiKuti
         private Image maasto = LoadImage("Maasto.jpg");
         private Image kompassikuva = LoadImage("kompassi");
         private DoubleMeter vihujaNyt;
+        private Image[] fire = LoadImages("plasma1","plasma2","plasma3");
         
+
         public override void Begin()
         {
             IsFullScreen = true;
@@ -77,6 +79,7 @@ namespace ProjectPatiKuti
             vihu.Image = blazoid;
             vihu.Tag = "vihu";
             AssaultRifle ase = new AssaultRifle(30, 30);
+
             Vector syntym‰Paikka;
             do
             {
@@ -93,8 +96,8 @@ namespace ProjectPatiKuti
             vihu.Add(ase);
             vihuCount += 1;
             vihujaHengiss‰ += 1;
-
-            Timer.CreateAndStart(1, delegate { ase.Shoot(); });
+            Timer.CreateAndStart(1, delegate { ase.Shoot();});
+            
             ase.ProjectileCollision = AmmusOsui;
             FollowerBrain vihunAivot = new FollowerBrain(pelaaja);
             vihunAivot.DistanceFar = 1000;
@@ -115,6 +118,7 @@ namespace ProjectPatiKuti
             //pelaaja.Image = bobble;
             pelaaja.CanRotate = false;
             fireball = new Cannon(0, 0);
+            
             Add(pelaaja);
             pelaaja.Add(fireball);
             fireball.ProjectileCollision = fireballOsui;
@@ -168,7 +172,10 @@ namespace ProjectPatiKuti
             if (kuti != null)
             {
                 kuti.Size *= 4;
-                //ammus.Image = ...
+                kuti.Animation =new Animation(fire);
+                kuti.Animation.FPS = 3;
+                kuti.Animation.Start();
+                kuti.Tag = "kuti";
                 //ammus.MaximumLifetime = TimeSpan.FromSeconds(2.0);
             }
         }
