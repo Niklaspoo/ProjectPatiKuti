@@ -30,6 +30,7 @@ namespace ProjectPatiKuti
         private Image maasto = LoadImage("Maasto.jpg");
         private Image kompassikuva = LoadImage("kompassi");
         private DoubleMeter vihujaNyt;
+        
         public override void Begin()
         {
             IsFullScreen = true;
@@ -63,7 +64,7 @@ namespace ProjectPatiKuti
             ProgressBar vihujapalkki = new ProgressBar(150, 20);
             vihujapalkki.X = (Screen.Width/2)-150;
             vihujapalkki.Y = Screen.Top - 20;
-            vihujapalkki.Angle= Angle.StraightAngle;
+            if (wave == 1) { vihujapalkki.Angle = Angle.StraightAngle; }
             vihujapalkki.BindTo(vihujaNyt);
             Add(vihujapalkki);
         }
@@ -184,14 +185,27 @@ namespace ProjectPatiKuti
                 {
                     vihuCount = 0;
                     wave += 1;
-
-                    while (vihuCount < wave + 2)
-                    {
-                        luoVihu();
-                        LuoVihuLaskuri();
-                    }
+                    uusiWave(wave);
+                    
                 }
             }
+        }
+        private void uusiWave(int wave) 
+        {
+            
+            ClearControls();
+            IsPaused = true;
+            pelaaja.Velocity = new Vector(0, 0);
+            pelaajanNopeus = new Vector(0, 0);
+            MultiSelectWindow uusWave = new MultiSelectWindow("Wave "+(wave-1)+" coplete. Choose your upgrade!","vaihtoehto1","vaihtoehto2");
+            uusWave.AddItemHandler(0, delegate { IsPaused = false; lisaaOhjaimet(); });
+            uusWave.AddItemHandler(1, Exit);
+            Add(uusWave);
+            while (vihuCount < wave + 2)
+            {
+                luoVihu();
+            }
+            if (vihuCount==wave+2) { LuoVihuLaskuri(); }
         }
         void AmmusOsui(PhysicsObject ammus, PhysicsObject kohde)
         {
