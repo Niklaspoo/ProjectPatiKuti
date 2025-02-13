@@ -27,11 +27,12 @@ namespace ProjectPatiKuti
         private int vihuHp = 0;
         private int vihujaHengissä = 0;
         private int vihuCount = 0;
-        private Image maasto = LoadImage("Maasto.jpg");
+        private Image maasto = LoadImage("Maasto.png");
         private Image kompassikuva = LoadImage("kompassi");
         private DoubleMeter vihujaNyt;
         private Image[] fire = LoadImages("plasma1","plasma2","plasma3");
-        
+        private Image[] bullet = LoadImages("ammus1","ammus2");
+
 
         public override void Begin()
         {
@@ -66,20 +67,20 @@ namespace ProjectPatiKuti
             ProgressBar vihujapalkki = new ProgressBar(150, 20);
             vihujapalkki.X = (Screen.Width/2)-150;
             vihujapalkki.Y = Screen.Top - 20;
-            if (wave == 1) { vihujapalkki.Angle = Angle.StraightAngle; }
+            vihujapalkki.Angle = Angle.StraightAngle;
+            vihujapalkki.BorderColor = Color.Black;
             vihujapalkki.BindTo(vihujaNyt);
             Add(vihujapalkki);
         }
         private void luoVihu()
         {
             vihuHp = wave * 1;
-            vihu = new PhysicsObject(80, 80);
+            vihu = new PhysicsObject(80, 57);
             vihu.Shape = Shape.Circle;
             vihu.Color = Color.Red;
             vihu.Image = blazoid;
             vihu.Tag = "vihu";
-            AssaultRifle ase = new AssaultRifle(30, 30);
-
+            AssaultRifle ase = new AssaultRifle(0, 0);
             Vector syntymäPaikka;
             do
             {
@@ -96,7 +97,16 @@ namespace ProjectPatiKuti
             vihu.Add(ase);
             vihuCount += 1;
             vihujaHengissä += 1;
-            Timer.CreateAndStart(1, delegate { ase.Shoot();});
+            Timer.CreateAndStart(1, delegate 
+            { 
+                vihuTahtaa();
+                PhysicsObject ammus = ase.Shoot(); 
+                ammus.Tag = "ammus"; 
+                ammus.Animation = new Animation(bullet); 
+                ammus.Animation.Start(); 
+                ammus.Size = new Vector(51,25); 
+                ammus.AddCollisionIgnoreGroup(1); 
+            });
             
             ase.ProjectileCollision = AmmusOsui;
             FollowerBrain vihunAivot = new FollowerBrain(pelaaja);
@@ -144,15 +154,11 @@ namespace ProjectPatiKuti
             Keyboard.Listen(Key.S, ButtonState.Released, liiku, "move", new Vector(0, 500));
             Keyboard.Listen(Key.A, ButtonState.Pressed, liiku, "move", new Vector(-500, 0));
             Keyboard.Listen(Key.A, ButtonState.Released, liiku, "move", new Vector(500, 0));
-            Keyboard.Listen(Key.W, ButtonState.Down, vihuTahtaa, "");
-            Keyboard.Listen(Key.A, ButtonState.Down, vihuTahtaa, "");
-            Keyboard.Listen(Key.S, ButtonState.Down, vihuTahtaa, "");
-            Keyboard.Listen(Key.D, ButtonState.Down, vihuTahtaa, "");
             Mouse.Listen(MouseButton.Left, ButtonState.Pressed, ammu, "fire", 0);
             Mouse.ListenMovement(0.1, tahtaa, "aim");
-            Mouse.ListenMovement(0.1, vihuTahtaa, "aim");
             Keyboard.Listen(Key.Space, ButtonState.Pressed, dash, "dash");
             Keyboard.Listen(Key.Escape, ButtonState.Pressed, menu, "menu");
+            Keyboard.Listen(Key.Enter, ButtonState.Pressed, () => uusiWave(wave), "");
         }
 
         public void menu()
@@ -165,19 +171,6 @@ namespace ProjectPatiKuti
             menu.AddItemHandler(0, delegate { IsPaused = false; lisaaOhjaimet(); });
             menu.AddItemHandler(1, Exit);
             Add(menu);
-        }
-        private void ammu(int suunta)
-        {
-            PhysicsObject kuti = fireball.Shoot();
-            if (kuti != null)
-            {
-                kuti.Size *= 4;
-                kuti.Animation =new Animation(fire);
-                kuti.Animation.FPS = 3;
-                kuti.Animation.Start();
-                kuti.Tag = "kuti";
-                //ammus.MaximumLifetime = TimeSpan.FromSeconds(2.0);
-            }
         }
 
         void fireballOsui(PhysicsObject fireball, PhysicsObject kohde)
@@ -206,17 +199,23 @@ namespace ProjectPatiKuti
             pelaajanNopeus = new Vector(0, 0);
             MultiSelectWindow uusWave = new MultiSelectWindow("Wave "+(wave-1)+" coplete. Choose your upgrade!","vaihtoehto1","vaihtoehto2");
             uusWave.AddItemHandler(0, delegate { IsPaused = false; lisaaOhjaimet(); });
-            uusWave.AddItemHandler(1, Exit);
+            uusWave.AddItemHandler(1, delegate { IsPaused = false; lisaaOhjaimet(); });
             Add(uusWave);
             while (vihuCount < wave + 2)
             {
                 luoVihu();
             }
             if (vihuCount==wave+2) { LuoVihuLaskuri(); }
+            foreach (var ammus in GetObjectsWithTag("ammus"))
+            {
+                ammus.Destroy();
+            }
+
         }
         void AmmusOsui(PhysicsObject ammus, PhysicsObject kohde)
         {
             ammus.Destroy();
+            
             if (kohde == pelaaja)
             {
                 if (kuolematon)
@@ -243,6 +242,20 @@ namespace ProjectPatiKuti
         {
             Vector suunta = (Mouse.PositionOnWorld - fireball.AbsolutePosition).Normalize();
             fireball.Angle = suunta.Angle;
+        }
+        private void ammu(int suunta)
+        {
+            PhysicsObject kuti = fireball.Shoot();
+            if (kuti != null)
+            {
+                kuti.AddCollisionIgnoreGroup(1);
+                kuti.Size *= 4;
+                kuti.Animation = new Animation(fire);
+                kuti.Animation.FPS = 3;
+                kuti.Animation.Start();
+                kuti.Tag = "kuti";
+                //ammus.MaximumLifetime = TimeSpan.FromSeconds(2.0);
+            }
         }
         private void vihuTahtaa()
         {

@@ -14,6 +14,12 @@
       <None Update="Content\alusta.png">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Update="Content\ammus1.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Content\ammus2.png">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
       <None Update="Content\blazoid.png">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
