@@ -32,7 +32,7 @@ namespace ProjectPatiKuti
         private DoubleMeter vihujaNyt;
         private Image[] fire = LoadImages("plasma1","plasma2","plasma3");
         private Image[] bullet = LoadImages("ammus1","ammus2");
-
+        private Image[] lima = LoadImages("lima1", "lima2", "lima3","lima4","lima3","lima2","lima7");
 
         public override void Begin()
         {
@@ -78,7 +78,9 @@ namespace ProjectPatiKuti
             vihu = new PhysicsObject(80, 57);
             vihu.Shape = Shape.Circle;
             vihu.Color = Color.Red;
-            vihu.Image = blazoid;
+            vihu.Animation = new Animation(lima);
+            vihu.Animation.FPS = 10;
+            vihu.Animation.Start();
             vihu.Tag = "vihu";
             AssaultRifle ase = new AssaultRifle(0, 0);
             Vector syntym‰Paikka;
@@ -197,7 +199,7 @@ namespace ProjectPatiKuti
             IsPaused = true;
             pelaaja.Velocity = new Vector(0, 0);
             pelaajanNopeus = new Vector(0, 0);
-            MultiSelectWindow uusWave = new MultiSelectWindow("Wave "+(wave-1)+" coplete. Choose your upgrade!","vaihtoehto1","vaihtoehto2");
+            MultiSelectWindow uusWave = new MultiSelectWindow("Wave "+(wave-1)+" complete. Choose your upgrade!","vaihtoehto1","vaihtoehto2");
             uusWave.AddItemHandler(0, delegate { IsPaused = false; lisaaOhjaimet(); });
             uusWave.AddItemHandler(1, delegate { IsPaused = false; lisaaOhjaimet(); });
             Add(uusWave);
