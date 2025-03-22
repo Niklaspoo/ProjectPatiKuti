@@ -40,6 +40,7 @@ namespace ProjectPatiKuti
         private string upgrade2;
         private double speed = 1;
         double dashDelay = 1;
+        DoubleMeter pelaajaHp;
 
 
 
@@ -53,8 +54,8 @@ namespace ProjectPatiKuti
         }
         public void aloitaPeli()
         {
-
             luoPelaaja();
+            LuoElamalaskuri(); // Initialize the health meter
             pelaajanNopeus = new Vector(0, 0);
             pelaaja.Velocity = pelaajanNopeus;
             Camera.Follow(pelaaja);
@@ -70,7 +71,7 @@ namespace ProjectPatiKuti
             LuoVihuLaskuri();
             Label vihut = new Label("Enemies left:");
             vihut.X = (Screen.Width / 2) - 150 - 155;
-            vihut.Y = Screen.Top - 20+3;
+            vihut.Y = Screen.Top - 20 + 3;
             Add(vihut);
         }
         void LuoVihuLaskuri()
@@ -144,7 +145,7 @@ namespace ProjectPatiKuti
             //pelaaja.Image = bobble;
             pelaaja.CanRotate = false;
             fireball = new Cannon(0, 0);
-
+            pelaaja.Restitution = 0;
             Add(pelaaja);
             pelaaja.Add(fireball);
             fireball.ProjectileCollision = fireballOsui;
@@ -152,6 +153,18 @@ namespace ProjectPatiKuti
             lisaaOhjaimet();
             luoReunat();
 
+        }
+        private void LuoElamalaskuri()
+        {
+            pelaajaHp = new DoubleMeter(10);
+            pelaajaHp.MaxValue = 10;
+            ProgressBar elamapalkki = new ProgressBar(150, 20);
+            elamapalkki.X = Screen.Left + 150;
+            elamapalkki.Y = Screen.Top - 20;
+            elamapalkki.Angle = Angle.StraightAngle;
+            elamapalkki.BorderColor = Color.Black;
+            elamapalkki.BindTo(pelaajaHp);
+            Add(elamapalkki);
         }
         private void luoReunat()
         {
@@ -211,7 +224,7 @@ namespace ProjectPatiKuti
         }
         private void uusiWave(int wave)
         {
-
+            pelaajaHp.Value = pelaajaHp.MaxValue;
             ClearControls();
             IsPaused = true;
             pelaaja.Velocity = new Vector(0, 0);
@@ -264,8 +277,10 @@ namespace ProjectPatiKuti
             }
 
             uusWave.DefaultCancel = -1;
-            uusWave.AddItemHandler(0, delegate { ApplyUpgrade(upgrade1, harvinaisuus1); IsPaused = false; lisaaOhjaimet(); });
-            uusWave.AddItemHandler(1, delegate { ApplyUpgrade(upgrade2, harvinaisuus2); IsPaused = false; lisaaOhjaimet(); });
+            uusWave.AddItemHandler(0, delegate { ApplyUpgrade(upgrade1, harvinaisuus1); pelaaja.Velocity = new Vector(0, 0);
+                pelaajanNopeus = new Vector(0, 0); IsPaused = false; lisaaOhjaimet(); });
+            uusWave.AddItemHandler(1, delegate { ApplyUpgrade(upgrade2, harvinaisuus2); pelaaja.Velocity = new Vector(0, 0);
+                pelaajanNopeus = new Vector(0, 0); IsPaused = false; lisaaOhjaimet(); });
             Add(uusWave);
             while (vihuCount < wave + 2)
             {
@@ -321,10 +336,16 @@ namespace ProjectPatiKuti
                 {
                     dashDelay -= 0.1;
                 }
+                if (rarity == "Rare")
+                {
+                    dashDelay -= 0.15;
+                }
             }
+
         }
         void AmmusOsui(PhysicsObject ammus, PhysicsObject kohde)
         {
+            ammus.Restitution =0;
             ammus.Destroy();
 
             if (kohde == pelaaja)
@@ -333,13 +354,17 @@ namespace ProjectPatiKuti
                 {
                     return;
                 }
-                pelaaja.Destroy();
-                ResetGameState();
-                ClearAll();
-                ClearAll();
-                ClearAll();
-                Begin();
-
+                pelaajaHp.Value -= 1;
+                if (pelaajaHp.Value <= 0)
+                {
+                    pelaaja.Destroy();
+                    ResetGameState();
+                    ClearAll();
+                    ClearAll();
+                    ClearAll();
+                    Begin();
+                }
+                return;
             }
         }
         private void ResetGameState()
