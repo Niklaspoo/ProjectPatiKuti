@@ -44,7 +44,7 @@ namespace ProjectPatiKuti
         private double LS = 0;
         private double dodge = 0;
         private double bulletSize = 1;
-        private double invincibilityTime = 0;
+        private double invincibilityTime = 0.1;
         private double dashTime = 0.2;
         private Image[] bobbleO = LoadImages("bobbleO1","bobbleO2","bobbleO3","bobbleO4", "bobbleO5", "bobbleO6");
         private Image[] bobbleV = LoadImages("bobbleV1", "bobbleV2", "bobbleV3", "bobbleV4", "bobbleV5", "bobbleV6");
@@ -419,11 +419,11 @@ namespace ProjectPatiKuti
             {
                 if (rarity == "Epic")
                 {
-                    dodge += 0.05;
+                    dodge += 5;
                 }
                 if (rarity == "Legendary")
                 {
-                    dodge += 0.1;
+                    dodge += 10;
                 }
             }
             else if (upgrade == "Bullet size")
@@ -474,7 +474,17 @@ namespace ProjectPatiKuti
                 {
                     return;
                 }
+                if (dodge > 0)
+                {
+                    if (RandomGen.NextInt(1, 101) >= dodge)
+                    {
+                        MessageDisplay.Add("Dodged!");
+                        return;
+                    }
+                }
                 pelaajaHp.Value -= 1;
+                kuolematon = true;
+                Timer.SingleShot(invincibilityTime, () => kuolematon = false);
                 if (pelaajaHp.Value <= 0)
                 {
                     pelaaja.Destroy();
@@ -611,9 +621,10 @@ namespace ProjectPatiKuti
         }
         private string upgrade(string rarity)
         {
+            int d = 6;
             int dd = 6;
             if (dashDelay <= 0.05) { dd = 5; }
-            
+            if (dodge > 60) { d = 5; }
             if (rarity == "Common")
             {
                 int i = RandomGen.NextInt(1, dd);
@@ -643,21 +654,21 @@ namespace ProjectPatiKuti
             }
             else if (rarity == "Epic")
             {
-                int i = RandomGen.NextInt(1, 6);
+                int i = RandomGen.NextInt(1, d);
                 if (i == 1) { return "Lifesteal"; }
-                if (i == 2) { return "Dodge"; }
+                if (i == 2) { return "Dash time"; }
                 if (i == 3) { return "Bullet size"; }
                 if (i == 4) { return "Invincibility time"; }
-                if (i == 5) { return "Dash time"; }
+                if (i == 5) { return "Dodge"; }
             }
             else if (rarity == "Legendary")
             {
-                int i = RandomGen.NextInt(1, 6);
+                int i = RandomGen.NextInt(1, d);
                 if (i == 1) { return "Lifesteal"; }
-                if (i == 2) { return "Dodge"; }
+                if (i == 2) { return "Dash time"; }
                 if (i == 3) { return "Bullet size"; }
                 if (i == 4) { return "Invincibility time"; }
-                if (i == 5) { return "Dash time"; }
+                if (i == 5) { return "Dodge"; }
             }
             return "Speed"; // Default return value
         }
