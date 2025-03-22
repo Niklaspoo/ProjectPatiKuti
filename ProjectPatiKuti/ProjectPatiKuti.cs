@@ -55,7 +55,7 @@ namespace ProjectPatiKuti
 
         public override void Begin()
         {
-            IsFullScreen = false;
+            IsFullScreen = true;
             MultiSelectWindow aloitus = new MultiSelectWindow("ProjectPK", "Start a new run", "QUIT");
             aloitus.AddItemHandler(0, aloitaPeli);
             aloitus.AddItemHandler(1, Exit);
@@ -482,7 +482,7 @@ namespace ProjectPatiKuti
                         return;
                     }
                 }
-                pelaajaHp.Value -= 1;
+                pelaajaHp.Value -= 1+(wave*0.6);
                 kuolematon = true;
                 Timer.SingleShot(invincibilityTime, () => kuolematon = false);
                 if (pelaajaHp.Value <= 0)
