@@ -39,6 +39,7 @@ namespace ProjectPatiKuti
         private string upgrade1;
         private string upgrade2;
         private double speed = 1;
+        double dashDelay = 1;
 
 
 
@@ -184,9 +185,10 @@ namespace ProjectPatiKuti
             IsPaused = true;
             pelaaja.Velocity = new Vector(0, 0);
             pelaajanNopeus = new Vector(0, 0);
-            MultiSelectWindow menu = new MultiSelectWindow("Menu", "Resume", "Quit");
+            MultiSelectWindow menu = new MultiSelectWindow("Menu", "Resume", "Keybinds", "Quit");
             menu.AddItemHandler(0, delegate { IsPaused = false; lisaaOhjaimet(); });
-            menu.AddItemHandler(1, Exit);
+            menu.AddItemHandler(1, delegate { IsPaused = false; lisaaOhjaimet(); MessageDisplay.Add("WASD: move, LMB: shoot, SPACE: dash, Q & E: zoom");  });
+            menu.AddItemHandler(2, Exit);
             Add(menu);
         }
 
@@ -292,7 +294,7 @@ namespace ProjectPatiKuti
                 {
                     speed += 0.3;
                 }
-                
+
             }
             else if (upgrade == "Firerate")
             {
@@ -309,7 +311,17 @@ namespace ProjectPatiKuti
                     fireball.FireRate += 0.3;
                 }
             }
-
+            else if (upgrade == "Dash delay")
+            {
+                if (rarity == "Common")
+                {
+                    dashDelay -= 0.05;
+                }
+                if (rarity == "Uncommon")
+                {
+                    dashDelay -= 0.1;
+                }
+            }
         }
         void AmmusOsui(PhysicsObject ammus, PhysicsObject kohde)
         {
@@ -378,7 +390,8 @@ namespace ProjectPatiKuti
             kuolematon = true;
             Timer.SingleShot(0.2, () => pelaaja.Velocity = pelaajanNopeus);
             Timer.SingleShot(0.2, () => kuolematon = false);
-            Timer.SingleShot(1, () => canDash = true);
+            if (dashDelay < 0.05) { dashDelay = 0.05; };
+            Timer.SingleShot(dashDelay, () => canDash = true);
         }
         private void liiku(Vector nopeus)
         {
@@ -448,9 +461,12 @@ namespace ProjectPatiKuti
         }
         private string upgrade(string rarity)
         {
-            int i = RandomGen.NextInt(1, 6);
+            int dd = 6;
+            if (dashDelay <= 0.05) { dd = 5; }
+            
             if (rarity == "Common")
             {
+                int i = RandomGen.NextInt(1, dd);
                 if (i == 1) { return "Speed"; }
                 if (i == 2) { return "Damage"; }
                 if (i == 3) { return "Firerate"; }
@@ -459,6 +475,7 @@ namespace ProjectPatiKuti
             }
             else if (rarity == "Uncommon")
             {
+                int i = RandomGen.NextInt(1, dd);
                 if (i == 1) { return "Speed"; }
                 if (i == 2) { return "Damage"; }
                 if (i == 3) { return "Firerate"; }
@@ -467,6 +484,7 @@ namespace ProjectPatiKuti
             }
             else if (rarity == "Rare")
             {
+                int i = RandomGen.NextInt(1, dd);
                 if (i == 1) { return "Speed"; }
                 if (i == 2) { return "Damage"; }
                 if (i == 3) { return "Firerate"; }
@@ -475,6 +493,7 @@ namespace ProjectPatiKuti
             }
             else if (rarity == "Epic")
             {
+                int i = RandomGen.NextInt(1, 6);
                 if (i == 1) { return "Lifesteal"; }
                 if (i == 2) { return "Dodge"; }
                 if (i == 3) { return "Bullet size"; }
@@ -483,6 +502,7 @@ namespace ProjectPatiKuti
             }
             else if (rarity == "Legendary")
             {
+                int i = RandomGen.NextInt(1, 6);
                 if (i == 1) { return "Lifesteal"; }
                 if (i == 2) { return "Dodge"; }
                 if (i == 3) { return "Bullet size"; }
