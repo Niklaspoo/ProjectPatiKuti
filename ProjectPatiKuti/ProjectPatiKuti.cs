@@ -41,12 +41,21 @@ namespace ProjectPatiKuti
         private double speed = 1;
         double dashDelay = 1;
         DoubleMeter pelaajaHp;
+        private double LS = 0;
+        private double dodge = 0;
+        private double bulletSize = 1;
+        private double invincibilityTime = 0;
+        private double dashTime = 0.2;
+        private Image[] bobbleO = LoadImages("bobbleO1","bobbleO2","bobbleO3","bobbleO4", "bobbleO5", "bobbleO6");
+        private Image[] bobbleV = LoadImages("bobbleV1", "bobbleV2", "bobbleV3", "bobbleV4", "bobbleV5", "bobbleV6");
+        private Image[] bobbleT = LoadImages("bobbleT1", "bobbleT2", "bobbleT3", "bobbleT4", "bobbleT5", "bobbleT6");
+        private Image[] bobbleE = LoadImages("bobbleE1", "bobbleE2", "bobbleE3", "bobbleE4", "bobbleE5", "bobbleE6");
 
 
 
         public override void Begin()
         {
-            IsFullScreen = true;
+            IsFullScreen = false;
             MultiSelectWindow aloitus = new MultiSelectWindow("ProjectPK", "Start a new run", "QUIT");
             aloitus.AddItemHandler(0, aloitaPeli);
             aloitus.AddItemHandler(1, Exit);
@@ -175,23 +184,35 @@ namespace ProjectPatiKuti
         }
         private void lisaaOhjaimet()
         {
-            Keyboard.Listen(Jypeli.Key.W, ButtonState.Pressed, liiku, "move", new Vector(000, 500*speed));
-            Keyboard.Listen(Jypeli.Key.W, ButtonState.Released, liiku, "move", new Vector(0, -500*speed));
-            Keyboard.Listen(Jypeli.Key.D, ButtonState.Pressed, liiku, "move", new Vector(500*speed, 0));
-            Keyboard.Listen(Jypeli.Key.D, ButtonState.Released, liiku, "move", new Vector(-500*speed, 0));
-            Keyboard.Listen(Jypeli.Key.S, ButtonState.Pressed, liiku, "move", new Vector(0, -500*speed));
-            Keyboard.Listen(Jypeli.Key.S, ButtonState.Released, liiku, "move", new Vector(0, 500*speed));
-            Keyboard.Listen(Jypeli.Key.A, ButtonState.Pressed, liiku, "move", new Vector(-500*speed, 0));
-            Keyboard.Listen(Jypeli.Key.A, ButtonState.Released, liiku, "move", new Vector(500*speed, 0));
-            Keyboard.Listen(Jypeli.Key.Q, ButtonState.Down, delegate{ if (Camera.ZoomFactor > 0.5) { Camera.ZoomFactor -= 0.01; } }, "Zoom out");
+            Keyboard.Listen(Jypeli.Key.W, ButtonState.Pressed, liiku, "move", new Vector(0, 500 * speed));
+            Keyboard.Listen(Jypeli.Key.W, ButtonState.Released, liiku, "move", new Vector(0, -500 * speed));
+            Keyboard.Listen(Jypeli.Key.W, ButtonState.Pressed, () => anim(bobbleT), "move");
+            Keyboard.Listen(Jypeli.Key.D, ButtonState.Pressed, liiku, "move", new Vector(500 * speed, 0));
+            Keyboard.Listen(Jypeli.Key.D, ButtonState.Released, liiku, "move", new Vector(-500 * speed, 0));
+            Keyboard.Listen(Jypeli.Key.D, ButtonState.Pressed, () => anim(bobbleO), "move");
+            Keyboard.Listen(Jypeli.Key.S, ButtonState.Pressed, liiku, "move", new Vector(0, -500 * speed));
+            Keyboard.Listen(Jypeli.Key.S, ButtonState.Released, liiku, "move", new Vector(0, 500 * speed));
+            Keyboard.Listen(Jypeli.Key.S, ButtonState.Pressed, () => anim(bobbleE), "move");
+            Keyboard.Listen(Jypeli.Key.A, ButtonState.Pressed, liiku, "move", new Vector(-500 * speed, 0));
+            Keyboard.Listen(Jypeli.Key.A, ButtonState.Released, liiku, "move", new Vector(500 * speed, 0));
+            Keyboard.Listen(Jypeli.Key.A, ButtonState.Pressed, () => anim(bobbleV), "move");
+            Keyboard.Listen(Jypeli.Key.Q, ButtonState.Down, delegate { if (Camera.ZoomFactor > 0.5) { Camera.ZoomFactor -= 0.01; } }, "Zoom out");
             Keyboard.Listen(Jypeli.Key.E, ButtonState.Down, delegate { if (Camera.ZoomFactor < 1) { Camera.ZoomFactor += 0.01; } }, "Zoom in");
             Mouse.Listen(Jypeli.MouseButton.Left, ButtonState.Down, ammu, "fire", 0);
             Mouse.ListenMovement(0.1, tahtaa, "aim");
             Keyboard.Listen(Jypeli.Key.Space, ButtonState.Pressed, dash, "dash");
             Keyboard.Listen(Jypeli.Key.Escape, ButtonState.Pressed, menu, "menu");
-            //Keyboard.Listen(Key.Enter, ButtonState.Pressed, () => uusiWave(wave), "");
         }
-
+        private void anim(Image[] suunta)
+        {
+            if (pelaaja.Velocity.Magnitude > 0)
+            {
+                pelaaja.Animation = new Animation(suunta);
+                pelaaja.Animation.FPS = 10;
+                pelaaja.Animation.Start();
+            }
+            
+        }
         public void menu()
         {
             ClearControls();
@@ -213,6 +234,14 @@ namespace ProjectPatiKuti
                 kohde.Destroy();
                 vihujaHengissä -= 1;
                 vihujaNyt.Value = vihujaHengissä;
+                if (LS > 0)
+                {
+                    pelaajaHp.Value += LS;
+                    if (pelaajaHp.Value > pelaajaHp.MaxValue)
+                    {
+                        pelaajaHp.Value = pelaajaHp.MaxValue;
+                    }
+                }
                 if (vihujaHengissä == 0)
                 {
                     vihuCount = 0;
@@ -341,11 +370,102 @@ namespace ProjectPatiKuti
                     dashDelay -= 0.15;
                 }
             }
+            else if (upgrade == "Health")
+            {
+                if (rarity == "Common")
+                {
+                    pelaajaHp.MaxValue += 1;
+                    pelaajaHp.Value += 1;
+                }
+                if (rarity == "Uncommon")
+                {
+                    pelaajaHp.MaxValue += 2;
+                    pelaajaHp.Value += 2;
+                }
+                if (rarity == "Rare")
+                {
+                    pelaajaHp.MaxValue += 3;
+                    pelaajaHp.Value += 3;
+                }
+
+            }
+            else if (upgrade == "Bullet speed")
+            {
+                if (rarity == "common")
+                {
+                    fireball.Power.Value += 100;
+                }
+                if (rarity == "Uncommon")
+                {
+                    fireball.Power.Value += 200;
+                }
+                if (rarity == "Rare")
+                {
+                    fireball.Power.Value += 300;
+                }
+            }
+            else if (upgrade == "Lifesteal")
+            {
+                if (rarity == "Epic")
+                {
+                    LS += 0.5;
+                }
+                if (rarity == "Legendary")
+                {
+                    LS += 0.8;
+                }
+            }
+            else if (upgrade == "Dodge")
+            {
+                if (rarity == "Epic")
+                {
+                    dodge += 0.05;
+                }
+                if (rarity == "Legendary")
+                {
+                    dodge += 0.1;
+                }
+            }
+            else if (upgrade == "Bullet size")
+            {
+                if (rarity == "Epic")
+                {
+                    bulletSize += 0.1;
+                }
+                if (rarity == "Legendary")
+                {
+                    bulletSize += 0.2;
+                }
+            }
+            else if (upgrade == "Invincibility time")
+            {
+                if (rarity == "Epic")
+                {
+                    invincibilityTime += 0.1;
+                }
+                if (rarity == "Legendary")
+                {
+                    invincibilityTime += 0.2;
+                }
+            }
+            else if (upgrade == "Dash time")
+            {
+                if (rarity == "Epic")
+                {
+                    dashTime += 0.05;
+                }
+                if (rarity == "Legendary")
+                {
+                    dashTime += 0.1;
+                }
+            }
+
+
 
         }
         void AmmusOsui(PhysicsObject ammus, PhysicsObject kohde)
         {
-            ammus.Restitution =0;
+            ammus.Restitution = 0;
             ammus.Destroy();
 
             if (kohde == pelaaja)
@@ -386,6 +506,7 @@ namespace ProjectPatiKuti
             {
                 kuti.AddCollisionIgnoreGroup(1);
                 kuti.Size *= 4;
+                kuti.Size *= bulletSize;
                 kuti.Animation = new Animation(fire);
                 kuti.Animation.FPS = 3;
                 kuti.Animation.Start();
@@ -413,8 +534,8 @@ namespace ProjectPatiKuti
             canDash = false;
             pelaaja.Push(pelaajanNopeus * 200);
             kuolematon = true;
-            Timer.SingleShot(0.2, () => pelaaja.Velocity = pelaajanNopeus);
-            Timer.SingleShot(0.2, () => kuolematon = false);
+            Timer.SingleShot(dashTime, () => pelaaja.Velocity = pelaajanNopeus);
+            Timer.SingleShot(dashTime, () => kuolematon = false);
             if (dashDelay < 0.05) { dashDelay = 0.05; };
             Timer.SingleShot(dashDelay, () => canDash = true);
         }
@@ -442,6 +563,10 @@ namespace ProjectPatiKuti
         }
         private void päivitäKompassi(Widget kompassi)
         {
+            if (pelaaja.Velocity.Magnitude == 0)
+            {
+                pelaaja.Animation.Stop();
+            }
             GameObject lähinVihu = löydäLähinVihu();
             if (lähinVihu != null)
             {
@@ -493,7 +618,7 @@ namespace ProjectPatiKuti
             {
                 int i = RandomGen.NextInt(1, dd);
                 if (i == 1) { return "Speed"; }
-                if (i == 2) { return "Damage"; }
+                if (i == 2) { return "Bullet speed"; }
                 if (i == 3) { return "Firerate"; }
                 if (i == 4) { return "Health"; }
                 if (i == 5) {return "Dash delay"; }
@@ -502,7 +627,7 @@ namespace ProjectPatiKuti
             {
                 int i = RandomGen.NextInt(1, dd);
                 if (i == 1) { return "Speed"; }
-                if (i == 2) { return "Damage"; }
+                if (i == 2) { return "Bullet speed"; }
                 if (i == 3) { return "Firerate"; }
                 if (i == 4) { return "Health"; }
                 if (i == 5) { return "Dash delay"; }
@@ -511,7 +636,7 @@ namespace ProjectPatiKuti
             {
                 int i = RandomGen.NextInt(1, dd);
                 if (i == 1) { return "Speed"; }
-                if (i == 2) { return "Damage"; }
+                if (i == 2) { return "Bullet speed"; }
                 if (i == 3) { return "Firerate"; }
                 if (i == 4) { return "Health"; }
                 if (i == 5) { return "Dash delay"; }
