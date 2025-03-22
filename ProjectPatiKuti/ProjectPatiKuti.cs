@@ -2,6 +2,7 @@ using Jypeli;
 using Jypeli.Assets;
 using Jypeli.Controls;
 using Jypeli.Widgets;
+using Silk.NET.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,9 +31,16 @@ namespace ProjectPatiKuti
         private Image maasto = LoadImage("Maasto.png");
         private Image kompassikuva = LoadImage("kompassi");
         private DoubleMeter vihujaNyt;
-        private Image[] fire = LoadImages("plasma1","plasma2","plasma3");
-        private Image[] bullet = LoadImages("ammus1","ammus2");
-        private Image[] lima = LoadImages("lima1", "lima2", "lima3","lima4","lima3","lima2","lima7");
+        private Image[] fire = LoadImages("plasma1", "plasma2", "plasma3");
+        private Image[] bullet = LoadImages("ammus1", "ammus2");
+        private Image[] lima = LoadImages("lima1", "lima2", "lima3", "lima4", "lima3", "lima2", "lima7");
+        private string harvinaisuus1;
+        private string harvinaisuus2;
+        private string upgrade1;
+        private string upgrade2;
+        private double speed = 1;
+
+
 
         public override void Begin()
         {
@@ -59,18 +67,23 @@ namespace ProjectPatiKuti
             Level.Background.TileToLevel();
             kompassi();
             LuoVihuLaskuri();
+            Label vihut = new Label("Enemies left:");
+            vihut.X = (Screen.Width / 2) - 150 - 155;
+            vihut.Y = Screen.Top - 20+3;
+            Add(vihut);
         }
         void LuoVihuLaskuri()
         {
             vihujaNyt = new DoubleMeter(vihujaHengissä);
             vihujaNyt.MaxValue = vihuCount;
             ProgressBar vihujapalkki = new ProgressBar(150, 20);
-            vihujapalkki.X = (Screen.Width/2)-150;
+            vihujapalkki.X = (Screen.Width / 2) - 150;
             vihujapalkki.Y = Screen.Top - 20;
             vihujapalkki.Angle = Angle.StraightAngle;
             vihujapalkki.BorderColor = Color.Black;
             vihujapalkki.BindTo(vihujaNyt);
             Add(vihujapalkki);
+            
         }
         private void luoVihu()
         {
@@ -99,17 +112,17 @@ namespace ProjectPatiKuti
             vihu.Add(ase);
             vihuCount += 1;
             vihujaHengissä += 1;
-            Timer.CreateAndStart(1, delegate 
-            { 
+            Timer.CreateAndStart(1, delegate
+            {
                 vihuTahtaa();
-                PhysicsObject ammus = ase.Shoot(); 
-                ammus.Tag = "ammus"; 
-                ammus.Animation = new Animation(bullet); 
-                ammus.Animation.Start(); 
-                ammus.Size = new Vector(51,25); 
-                ammus.AddCollisionIgnoreGroup(1); 
+                PhysicsObject ammus = ase.Shoot();
+                ammus.Tag = "ammus";
+                ammus.Animation = new Animation(bullet);
+                ammus.Animation.Start();
+                ammus.Size = new Vector(51, 25);
+                ammus.AddCollisionIgnoreGroup(1);
             });
-            
+
             ase.ProjectileCollision = AmmusOsui;
             FollowerBrain vihunAivot = new FollowerBrain(pelaaja);
             vihunAivot.DistanceFar = 1000;
@@ -130,7 +143,7 @@ namespace ProjectPatiKuti
             //pelaaja.Image = bobble;
             pelaaja.CanRotate = false;
             fireball = new Cannon(0, 0);
-            
+
             Add(pelaaja);
             pelaaja.Add(fireball);
             fireball.ProjectileCollision = fireballOsui;
@@ -148,19 +161,21 @@ namespace ProjectPatiKuti
         }
         private void lisaaOhjaimet()
         {
-            Keyboard.Listen(Key.W, ButtonState.Pressed, liiku, "move", new Vector(000, 500));
-            Keyboard.Listen(Key.W, ButtonState.Released, liiku, "move", new Vector(0, -500));
-            Keyboard.Listen(Key.D, ButtonState.Pressed, liiku, "move", new Vector(500, 0));
-            Keyboard.Listen(Key.D, ButtonState.Released, liiku, "move", new Vector(-500, 0));
-            Keyboard.Listen(Key.S, ButtonState.Pressed, liiku, "move", new Vector(0, -500));
-            Keyboard.Listen(Key.S, ButtonState.Released, liiku, "move", new Vector(0, 500));
-            Keyboard.Listen(Key.A, ButtonState.Pressed, liiku, "move", new Vector(-500, 0));
-            Keyboard.Listen(Key.A, ButtonState.Released, liiku, "move", new Vector(500, 0));
-            Mouse.Listen(MouseButton.Left, ButtonState.Pressed, ammu, "fire", 0);
+            Keyboard.Listen(Jypeli.Key.W, ButtonState.Pressed, liiku, "move", new Vector(000, 500*speed));
+            Keyboard.Listen(Jypeli.Key.W, ButtonState.Released, liiku, "move", new Vector(0, -500*speed));
+            Keyboard.Listen(Jypeli.Key.D, ButtonState.Pressed, liiku, "move", new Vector(500*speed, 0));
+            Keyboard.Listen(Jypeli.Key.D, ButtonState.Released, liiku, "move", new Vector(-500*speed, 0));
+            Keyboard.Listen(Jypeli.Key.S, ButtonState.Pressed, liiku, "move", new Vector(0, -500*speed));
+            Keyboard.Listen(Jypeli.Key.S, ButtonState.Released, liiku, "move", new Vector(0, 500*speed));
+            Keyboard.Listen(Jypeli.Key.A, ButtonState.Pressed, liiku, "move", new Vector(-500*speed, 0));
+            Keyboard.Listen(Jypeli.Key.A, ButtonState.Released, liiku, "move", new Vector(500*speed, 0));
+            Keyboard.Listen(Jypeli.Key.Q, ButtonState.Down, delegate{ if (Camera.ZoomFactor > 0.5) { Camera.ZoomFactor -= 0.01; } }, "Zoom out");
+            Keyboard.Listen(Jypeli.Key.E, ButtonState.Down, delegate { if (Camera.ZoomFactor < 1) { Camera.ZoomFactor += 0.01; } }, "Zoom in");
+            Mouse.Listen(Jypeli.MouseButton.Left, ButtonState.Down, ammu, "fire", 0);
             Mouse.ListenMovement(0.1, tahtaa, "aim");
-            Keyboard.Listen(Key.Space, ButtonState.Pressed, dash, "dash");
-            Keyboard.Listen(Key.Escape, ButtonState.Pressed, menu, "menu");
-            Keyboard.Listen(Key.Enter, ButtonState.Pressed, () => uusiWave(wave), "");
+            Keyboard.Listen(Jypeli.Key.Space, ButtonState.Pressed, dash, "dash");
+            Keyboard.Listen(Jypeli.Key.Escape, ButtonState.Pressed, menu, "menu");
+            //Keyboard.Listen(Key.Enter, ButtonState.Pressed, () => uusiWave(wave), "");
         }
 
         public void menu()
@@ -188,36 +203,118 @@ namespace ProjectPatiKuti
                     vihuCount = 0;
                     wave += 1;
                     uusiWave(wave);
-                    
+
                 }
             }
         }
-        private void uusiWave(int wave) 
+        private void uusiWave(int wave)
         {
-            
+
             ClearControls();
             IsPaused = true;
             pelaaja.Velocity = new Vector(0, 0);
             pelaajanNopeus = new Vector(0, 0);
-            MultiSelectWindow uusWave = new MultiSelectWindow("Wave "+(wave-1)+" complete. Choose your upgrade!","vaihtoehto1","vaihtoehto2");
-            uusWave.AddItemHandler(0, delegate { IsPaused = false; lisaaOhjaimet(); });
-            uusWave.AddItemHandler(1, delegate { IsPaused = false; lisaaOhjaimet(); });
+            harvinaisuus1 = Rarity();
+            harvinaisuus2 = Rarity();
+            upgrade1 = upgrade(harvinaisuus1);
+            upgrade2 = upgrade(harvinaisuus2);
+            MultiSelectWindow uusWave = new MultiSelectWindow("Wave " + (wave - 1) + " complete. Choose your upgrade!", harvinaisuus1+": "+upgrade1, harvinaisuus2 + ": " + upgrade2);
+            PushButton[] nappulat = uusWave.Buttons;
+            if (harvinaisuus1 == "Legendary")
+            {
+                nappulat[0].Color = Color.Gold;
+            }
+            if (harvinaisuus2 == "Legendary")
+            {
+                nappulat[1].Color = Color.Gold;
+            }
+            if (harvinaisuus1 == "Epic")
+            {
+                nappulat[0].Color = Color.Purple;
+            }
+            if (harvinaisuus2 == "Epic")
+            {
+                nappulat[1].Color = Color.Purple;
+            }
+            if (harvinaisuus1 == "Rare")
+            {
+                nappulat[0].Color = Color.Blue;
+            }
+            if (harvinaisuus2 == "Rare")
+            {
+                nappulat[1].Color = Color.Blue;
+            }
+            if (harvinaisuus1 == "Uncommon")
+            {
+                nappulat[0].Color = Color.Green;
+            }
+            if (harvinaisuus2 == "Uncommon")
+            {
+                nappulat[1].Color = Color.Green;
+            }
+            if (harvinaisuus1 == "Common")
+            {
+                nappulat[0].Color = Color.Gray;
+            }
+            if (harvinaisuus2 == "Common")
+            {
+                nappulat[1].Color = Color.Gray;
+            }
+
+            uusWave.DefaultCancel = -1;
+            uusWave.AddItemHandler(0, delegate { ApplyUpgrade(upgrade1, harvinaisuus1); IsPaused = false; lisaaOhjaimet(); });
+            uusWave.AddItemHandler(1, delegate { ApplyUpgrade(upgrade2, harvinaisuus2); IsPaused = false; lisaaOhjaimet(); });
             Add(uusWave);
             while (vihuCount < wave + 2)
             {
                 luoVihu();
             }
-            if (vihuCount==wave+2) { LuoVihuLaskuri(); }
+            if (vihuCount == wave + 2) { LuoVihuLaskuri(); }
             foreach (var ammus in GetObjectsWithTag("ammus"))
             {
                 ammus.Destroy();
             }
 
         }
+        private void ApplyUpgrade(string upgrade, string rarity)
+        {
+            if (upgrade == "Speed")
+            {
+                if (rarity == "Common")
+                {
+                    speed += 0.1;
+                }
+                if (rarity == "Uncommon")
+                {
+                    speed += 0.15;
+                }
+                if (rarity == "Rare")
+                {
+                    speed += 0.3;
+                }
+                
+            }
+            else if (upgrade == "Firerate")
+            {
+                if (rarity == "Common")
+                {
+                    fireball.FireRate += 0.1;
+                }
+                if (rarity == "Uncommon")
+                {
+                    fireball.FireRate += 0.15;
+                }
+                if (rarity == "Rare")
+                {
+                    fireball.FireRate += 0.3;
+                }
+            }
+
+        }
         void AmmusOsui(PhysicsObject ammus, PhysicsObject kohde)
         {
             ammus.Destroy();
-            
+
             if (kohde == pelaaja)
             {
                 if (kuolematon)
@@ -256,6 +353,7 @@ namespace ProjectPatiKuti
                 kuti.Animation.FPS = 3;
                 kuti.Animation.Start();
                 kuti.Tag = "kuti";
+               
                 //ammus.MaximumLifetime = TimeSpan.FromSeconds(2.0);
             }
         }
@@ -284,12 +382,12 @@ namespace ProjectPatiKuti
         }
         private void liiku(Vector nopeus)
         {
-            if ((Math.Abs(pelaajanNopeus.X) == 250) && (Math.Abs(pelaajanNopeus.Y) == 250))
+            if ((Math.Abs(pelaajanNopeus.X) == 250*speed) && (Math.Abs(pelaajanNopeus.Y) == 250*speed))
             {
                 pelaajanNopeus = pelaajanNopeus * 2;
             }
             pelaajanNopeus += nopeus;
-            if ((Math.Abs(pelaajanNopeus.X) == 500) && (Math.Abs(pelaajanNopeus.Y) == 500))
+            if ((Math.Abs(pelaajanNopeus.X) == 500*speed) && (Math.Abs(pelaajanNopeus.Y) == 500*speed))
             {
                 pelaajanNopeus = pelaajanNopeus / 2;
             }
@@ -329,6 +427,69 @@ namespace ProjectPatiKuti
                 }
             }
             return lähinVihu;
+        }
+        private static string Rarity()
+        {
+            switch
+                (RandomGen.NextInt(1, 101))
+            {
+                case int n when (n >= 1 && n <= 5):
+                    return "Legendary";
+                case int n when (n >= 6 && n <= 15):
+                    return "Epic";
+                case int n when (n >= 16 && n <= 35):
+                    return "Rare";
+                case int n when (n >= 36 && n <= 75):
+                    return "Uncommon";
+                default:
+                    return "Common";
+
+            }
+        }
+        private string upgrade(string rarity)
+        {
+            int i = RandomGen.NextInt(1, 6);
+            if (rarity == "Common")
+            {
+                if (i == 1) { return "Speed"; }
+                if (i == 2) { return "Damage"; }
+                if (i == 3) { return "Firerate"; }
+                if (i == 4) { return "Health"; }
+                if (i == 5) {return "Dash delay"; }
+            }
+            else if (rarity == "Uncommon")
+            {
+                if (i == 1) { return "Speed"; }
+                if (i == 2) { return "Damage"; }
+                if (i == 3) { return "Firerate"; }
+                if (i == 4) { return "Health"; }
+                if (i == 5) { return "Dash delay"; }
+            }
+            else if (rarity == "Rare")
+            {
+                if (i == 1) { return "Speed"; }
+                if (i == 2) { return "Damage"; }
+                if (i == 3) { return "Firerate"; }
+                if (i == 4) { return "Health"; }
+                if (i == 5) { return "Dash delay"; }
+            }
+            else if (rarity == "Epic")
+            {
+                if (i == 1) { return "Lifesteal"; }
+                if (i == 2) { return "Dodge"; }
+                if (i == 3) { return "Bullet size"; }
+                if (i == 4) { return "Invincibility time"; }
+                if (i == 5) { return "Dash time"; }
+            }
+            else if (rarity == "Legendary")
+            {
+                if (i == 1) { return "Lifesteal"; }
+                if (i == 2) { return "Dodge"; }
+                if (i == 3) { return "Bullet size"; }
+                if (i == 4) { return "Invincibility time"; }
+                if (i == 5) { return "Dash time"; }
+            }
+            return "Speed"; // Default return value
         }
     }
 }
