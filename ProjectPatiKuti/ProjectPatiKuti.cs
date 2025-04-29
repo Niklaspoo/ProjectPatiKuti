@@ -15,43 +15,153 @@ namespace ProjectPatiKuti
     /// </summary>
     public class ProjectPatiKuti : PhysicsGame
     {
+        /// <summary>
+        /// Pelaajan ase.
+        /// </summary>
         private AssaultRifle ase;
+        /// <summary>
+        /// Pelaajan ammus.
+        /// </summary>
         private Cannon fireball;
+        /// <summary>
+        /// Pelaajan nopeus.
+        /// </summary>
         private Vector pelaajanNopeus = new Vector(0, 0);
+        /// <summary>
+        /// Pelaajan fysiikkaobjekti.
+        /// </summary>
         private PhysicsObject pelaaja;
+        /// <summary>
+        /// Vihollisen fysiikkaobjekti.
+        /// </summary>
         private PhysicsObject vihu;
+        /// <summary>
+        /// Onko pelaaja kuolematon.
+        /// </summary>
         private bool kuolematon = false;
+        /// <summary>
+        /// Voiko pelaaja k‰ytt‰‰ dash:ia
+        /// </summary>
         private bool canDash = true;
+        /// <summary>
+        /// Pelaajan hahmon kuva.
+        /// </summary>
         private Image blazoid = LoadImage("blazoid");
+        /// <summary>
+        /// Pelaajan toinen hahmon kuva.
+        /// </summary>
         private Image bobble = LoadImage("bobble");
+        /// <summary>
+        /// Nykyinen aalto.
+        /// </summary>
         private int wave = 1;
+        /// <summary>
+        /// Vihollisen "el‰m‰" m‰‰r‰.
+        /// </summary>
         private int vihuHp = 0;
+        /// <summary>
+        /// Kuinka monta vihollista on hengiss‰.
+        /// </summary>
         private int vihujaHengiss‰ = 0;
+        /// <summary>
+        /// Kuinka monta vihollista on luotu.
+        /// </summary>
         private int vihuCount = 0;
+        /// <summary>
+        /// Maaston kuva.
+        /// </summary>
         private Image maasto = LoadImage("Maasto.png");
+        /// <summary>
+        /// Kompassin kuva.
+        /// </summary>
         private Image kompassikuva = LoadImage("kompassi");
+        /// <summary>
+        /// Vihollisten m‰‰r‰n mittari.
+        /// </summary>
         private DoubleMeter vihujaNyt;
+        /// <summary>
+        /// Pelaajan ammuksen kuvat.
+        /// </summary>
         private Image[] fire = LoadImages("plasma1", "plasma2", "plasma3");
+        /// <summary>
+        /// Ammusanimaation kuvat.
+        /// </summary>
         private Image[] bullet = LoadImages("ammus1", "ammus2");
+        /// <summary>
+        /// Lima-animaation kuvat.
+        /// </summary>
         private Image[] lima = LoadImages("lima1", "lima2", "lima3", "lima4", "lima3", "lima2", "lima7");
+        /// <summary>
+        /// Harvinaisuus.
+        /// </summary>
         private string harvinaisuus1;
+        /// <summary>
+        /// Harvinaisuus.
+        /// </summary>
         private string harvinaisuus2;
+        /// <summary>
+        /// P‰ivitys.
+        /// </summary>
         private string upgrade1;
+        /// <summary>
+        /// P‰ivitys.
+        /// </summary>
         private string upgrade2;
+        /// <summary>
+        /// Pelaajan nopeuskerroin.
+        /// </summary>
         private double speed = 1;
+        /// <summary>
+        /// Dash:in viive.
+        /// </summary>
         double dashDelay = 1;
+        /// <summary>
+        /// Pelaajan "el‰m‰n" mittari.
+        /// </summary>
         DoubleMeter pelaajaHp;
+        /// <summary>
+        /// Pelaajan lifesteal.
+        /// </summary>
         private double LS = 0;
+        /// <summary>
+        /// Pelaajan dodge todenn‰kˆisyys.
+        /// </summary>
         private double dodge = 0;
+        /// <summary>
+        /// Ammuksen koko.
+        /// </summary>
         private double bulletSize = 1;
+        /// <summary>
+        /// I-framejen kesto.
+        /// </summary>
         private double invincibilityTime = 0.1;
+        /// <summary>
+        /// Dash:in kesto.
+        /// </summary>
         private double dashTime = 0.2;
-        private Image[] bobbleO = LoadImages("bobbleO1","bobbleO2","bobbleO3","bobbleO4", "bobbleO5", "bobbleO6");
+        /// <summary>
+        /// Pelaajan oikealle animaatio.
+        /// </summary>
+        private Image[] bobbleO = LoadImages("bobbleO1", "bobbleO2", "bobbleO3", "bobbleO4", "bobbleO5", "bobbleO6");
+        /// <summary>
+        /// Pelaajan vasemmalle animaatio.
+        /// </summary>
         private Image[] bobbleV = LoadImages("bobbleV1", "bobbleV2", "bobbleV3", "bobbleV4", "bobbleV5", "bobbleV6");
+        /// <summary>
+        /// Pelaajan ylˆs animaatio.
+        /// </summary>
         private Image[] bobbleT = LoadImages("bobbleT1", "bobbleT2", "bobbleT3", "bobbleT4", "bobbleT5", "bobbleT6");
+        /// <summary>
+        /// Pelaajan alas animaatio.
+        /// </summary>
         private Image[] bobbleE = LoadImages("bobbleE1", "bobbleE2", "bobbleE3", "bobbleE4", "bobbleE5", "bobbleE6");
 
 
+
+
+        /// <summary>
+        /// Alustaa pelin ja n‰ytt‰‰ p‰‰valikon.
+        /// </summary>
 
         public override void Begin()
         {
@@ -61,6 +171,9 @@ namespace ProjectPatiKuti
             aloitus.AddItemHandler(1, Exit);
             Add(aloitus);
         }
+        /// <summary>
+        /// Aloittaa pelin luomalla pelaajan, viholliset ja k‰yttˆliittym‰n elementit.
+        /// </summary>
         public void aloitaPeli()
         {
             luoPelaaja();
@@ -83,6 +196,9 @@ namespace ProjectPatiKuti
             vihut.Y = Screen.Top - 20 + 3;
             Add(vihut);
         }
+        /// <summary>
+        /// Luo vihollisten m‰‰r‰n laskurin.
+        /// </summary>
         void LuoVihuLaskuri()
         {
             vihujaNyt = new DoubleMeter(vihujaHengiss‰);
@@ -96,6 +212,9 @@ namespace ProjectPatiKuti
             Add(vihujapalkki);
             
         }
+        /// <summary>
+        /// Luo uuden vihollisen pelimaailmaan.
+        /// </summary>
         private void luoVihu()
         {
             vihuHp = wave * 1;
@@ -142,7 +261,9 @@ namespace ProjectPatiKuti
             vihu.Brain = vihunAivot;
         }
 
-
+        /// <summary>
+        /// Luo pelaajan pelimaailmaan.
+        /// </summary>
         public void luoPelaaja()
         {
             pelaaja = new PhysicsObject(64, 85);
@@ -163,6 +284,9 @@ namespace ProjectPatiKuti
             luoReunat();
 
         }
+        /// <summary>
+        /// Luo pelaajan "el‰m‰n" mittarin.
+        /// </summary>
         private void LuoElamalaskuri()
         {
             pelaajaHp = new DoubleMeter(10);
@@ -175,6 +299,9 @@ namespace ProjectPatiKuti
             elamapalkki.BindTo(pelaajaHp);
             Add(elamapalkki);
         }
+        /// <summary>
+        /// Luo pelimaailman reunat.
+        /// </summary>
         private void luoReunat()
         {
 
@@ -182,6 +309,9 @@ namespace ProjectPatiKuti
             Level.CreateBorders(0, true);
 
         }
+        /// <summary>
+        /// Lis‰‰ nappuloille toiminnot.
+        /// </summary>
         private void lisaaOhjaimet()
         {
             Keyboard.Listen(Jypeli.Key.W, ButtonState.Pressed, liiku, "move", new Vector(0, 500 * speed));
@@ -203,6 +333,10 @@ namespace ProjectPatiKuti
             Keyboard.Listen(Jypeli.Key.Space, ButtonState.Pressed, dash, "dash");
             Keyboard.Listen(Jypeli.Key.Escape, ButtonState.Pressed, menu, "menu");
         }
+        /// <summary>
+        /// Luo pelaajan liikkeen animaation.
+        /// </summary>
+        /// <param name="suunta">Animaation suunta.</param>
         private void anim(Image[] suunta)
         {
             if (pelaaja.Velocity.Magnitude > 0)
@@ -211,8 +345,20 @@ namespace ProjectPatiKuti
                 pelaaja.Animation.FPS = 10;
                 pelaaja.Animation.Start();
             }
-            
+            else
+            {
+                pelaaja.Animation?.Stop();
+            }
         }
+
+        
+
+
+        
+        
+        /// <summary>
+        /// N‰ytt‰‰ pelin valikon. Luo myˆs valikon toiminnallisuuden.
+        /// </summary>
         public void menu()
         {
             ClearControls();
@@ -226,6 +372,11 @@ namespace ProjectPatiKuti
             Add(menu);
         }
 
+        /// <summary>
+        /// Tarkistaa tulipallon osumisen kohteeseen.
+        /// </summary>
+        /// <param name="fireball">Tulipallo-objekti.</param>
+        /// <param name="kohde">Kohde, johon tulipallo osui.</param>
         void fireballOsui(PhysicsObject fireball, PhysicsObject kohde)
         {
             fireball.Destroy();
@@ -251,6 +402,10 @@ namespace ProjectPatiKuti
                 }
             }
         }
+        /// <summary>
+        /// Luo uuden aallon ja antaa pelaajalle p‰ivitysvaihtoehdot.
+        /// </summary>
+        /// <param name="wave">Nykyinen aalto.</param>
         private void uusiWave(int wave)
         {
             pelaajaHp.Value = pelaajaHp.MaxValue;
@@ -322,6 +477,11 @@ namespace ProjectPatiKuti
             }
 
         }
+        /// <summary>
+        /// Antaa pelaajalle p‰ivityksen, joka sopii harvinaisuuteen.
+        /// </summary>
+        /// <param name="upgrade">P‰ivityksen nimi.</param>
+        /// <param name="rarity">P‰ivityksen harvinaisuus.</param>
         private void ApplyUpgrade(string upgrade, string rarity)
         {
             if (upgrade == "Speed")
@@ -463,6 +623,11 @@ namespace ProjectPatiKuti
 
 
         }
+        /// <summary>
+        /// Tarkistaa ammuksen osumisen kohteeseen.
+        /// </summary>
+        /// <param name="ammus">Ammus-objekti.</param>
+        /// <param name="kohde">Kohde, johon ammus osui.</param>
         void AmmusOsui(PhysicsObject ammus, PhysicsObject kohde)
         {
             ammus.Restitution = 0;
@@ -497,6 +662,9 @@ namespace ProjectPatiKuti
                 return;
             }
         }
+        /// <summary>
+        /// Nollaa pelin tilan.
+        /// </summary>
         private void ResetGameState()
         {
             wave = 1;
@@ -504,11 +672,18 @@ namespace ProjectPatiKuti
             vihujaHengiss‰ = 0;
             vihuCount = 0;
         }
+        /// <summary>
+        /// K‰sittelee pelaajan t‰ht‰‰misen.
+        /// </summary>
         private void tahtaa()
         {
             Vector suunta = (Mouse.PositionOnWorld - fireball.AbsolutePosition).Normalize();
             fireball.Angle = suunta.Angle;
         }
+        /// <summary>
+        /// K‰sittelee pelaajan ampumisen.
+        /// </summary>
+        /// <param name="suunta">Ampumisen suunta.</param>
         private void ammu(int suunta)
         {
             PhysicsObject kuti = fireball.Shoot();
@@ -525,6 +700,9 @@ namespace ProjectPatiKuti
                 //ammus.MaximumLifetime = TimeSpan.FromSeconds(2.0);
             }
         }
+        /// <summary>
+        /// K‰sittelee vihollisen t‰ht‰‰misen pelaajaan.
+        /// </summary>
         private void vihuTahtaa()
         {
             foreach (var vihu in GetObjectsWithTag("vihu"))
@@ -537,7 +715,9 @@ namespace ProjectPatiKuti
                 }
             }
         }
-
+        /// <summary>
+        /// K‰sittelee pelaajan dash:in.
+        /// </summary>
         public void dash()
         {
             if (!canDash) return;
@@ -549,6 +729,10 @@ namespace ProjectPatiKuti
             if (dashDelay < 0.05) { dashDelay = 0.05; };
             Timer.SingleShot(dashDelay, () => canDash = true);
         }
+        /// <summary>
+        /// K‰sittelee pelaajan liikkumisen.
+        /// </summary>
+        /// <param name="nopeus">Liikkumisnopeus.</param>
         private void liiku(Vector nopeus)
         {
             if ((Math.Abs(pelaajanNopeus.X) == 250*speed) && (Math.Abs(pelaajanNopeus.Y) == 250*speed))
@@ -562,6 +746,9 @@ namespace ProjectPatiKuti
             }
             pelaaja.Velocity = pelaajanNopeus;
         }
+        /// <summary>
+        /// Luo kompassin, joka n‰ytt‰‰ l‰himm‰n vihollisen suunnan.
+        /// </summary>
         private void kompassi()
         {
             Widget kompassi = new Widget(100, 100);
@@ -571,12 +758,17 @@ namespace ProjectPatiKuti
 
             Timer.SingleShot(0.1, () => p‰ivit‰Kompassi(kompassi));
         }
+        /// <summary>
+        /// P‰ivitt‰‰ kompassin osoittamaan l‰himm‰n vihollisen suuntaan.
+        /// </summary>
+        /// <param name="kompassi">Kompassi-widget.</param>
         private void p‰ivit‰Kompassi(Widget kompassi)
         {
-            if (pelaaja.Velocity.Magnitude == 0)
+            if (pelaaja.Velocity.Magnitude < 0)
             {
                 pelaaja.Animation.Stop();
             }
+            anim(bobbleO);
             GameObject l‰hinVihu = lˆyd‰L‰hinVihu();
             if (l‰hinVihu != null)
             {
@@ -586,6 +778,10 @@ namespace ProjectPatiKuti
             Timer.SingleShot(0.1, () => p‰ivit‰Kompassi(kompassi));
 
         }
+        /// <summary>
+        /// Etsii l‰himm‰n vihollisen pelaajasta.
+        /// </summary>
+        /// <returns>L‰hin vihollinen.</returns>
         private GameObject lˆyd‰L‰hinVihu()
         {
             GameObject l‰hinVihu = null;
@@ -601,6 +797,10 @@ namespace ProjectPatiKuti
             }
             return l‰hinVihu;
         }
+        /// <summary>
+        /// Arpoo harvinaisuuden.
+        /// </summary>
+        /// <returns>Harvinaisuus merkkijonona.</returns>
         private static string Rarity()
         {
             switch
@@ -619,6 +819,11 @@ namespace ProjectPatiKuti
 
             }
         }
+        /// <summary>
+        /// Valitsee p‰ivityksen harvinaisuuden perusteella.
+        /// </summary>
+        /// <param name="rarity">Harvinaisuus.</param>
+        /// <returns>P‰ivityksen nimi.</returns>
         private string upgrade(string rarity)
         {
             int d = 6;
