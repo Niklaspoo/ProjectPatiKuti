@@ -40,7 +40,7 @@ namespace ProjectPatiKuti
         /// </summary>
         private bool kuolematon = false;
         /// <summary>
-        /// Voiko pelaaja käyttää dash:ia
+        /// Voiko pelaaja kï¿½yttï¿½ï¿½ dash:ia
         /// </summary>
         private bool canDash = true;
         /// <summary>
@@ -56,13 +56,13 @@ namespace ProjectPatiKuti
         /// </summary>
         private int wave = 1;
         /// <summary>
-        /// Vihollisen "elämä" määrä.
+        /// Vihollisen "elï¿½mï¿½" mï¿½ï¿½rï¿½.
         /// </summary>
         private int vihuHp = 0;
         /// <summary>
-        /// Kuinka monta vihollista on hengissä.
+        /// Kuinka monta vihollista on hengissï¿½.
         /// </summary>
-        private int vihujaHengissä = 0;
+        private int vihujaHengissÃ¤ = 0;
         /// <summary>
         /// Kuinka monta vihollista on luotu.
         /// </summary>
@@ -76,7 +76,7 @@ namespace ProjectPatiKuti
         /// </summary>
         private Image kompassikuva = LoadImage("kompassi");
         /// <summary>
-        /// Vihollisten määrän mittari.
+        /// Vihollisten mï¿½ï¿½rï¿½n mittari.
         /// </summary>
         private DoubleMeter vihujaNyt;
         /// <summary>
@@ -100,11 +100,11 @@ namespace ProjectPatiKuti
         /// </summary>
         private string harvinaisuus2;
         /// <summary>
-        /// Päivitys.
+        /// Pï¿½ivitys.
         /// </summary>
         private string upgrade1;
         /// <summary>
-        /// Päivitys.
+        /// Pï¿½ivitys.
         /// </summary>
         private string upgrade2;
         /// <summary>
@@ -116,7 +116,7 @@ namespace ProjectPatiKuti
         /// </summary>
         double dashDelay = 1;
         /// <summary>
-        /// Pelaajan "elämän" mittari.
+        /// Pelaajan "elï¿½mï¿½n" mittari.
         /// </summary>
         DoubleMeter pelaajaHp;
         /// <summary>
@@ -124,7 +124,7 @@ namespace ProjectPatiKuti
         /// </summary>
         private double LS = 0;
         /// <summary>
-        /// Pelaajan dodge todennäköisyys.
+        /// Pelaajan dodge todennï¿½kï¿½isyys.
         /// </summary>
         private double dodge = 0;
         /// <summary>
@@ -148,19 +148,20 @@ namespace ProjectPatiKuti
         /// </summary>
         private Image[] bobbleV = LoadImages("bobbleV1", "bobbleV2", "bobbleV3", "bobbleV4", "bobbleV5", "bobbleV6");
         /// <summary>
-        /// Pelaajan ylös animaatio.
+        /// Pelaajan ylï¿½s animaatio.
         /// </summary>
         private Image[] bobbleT = LoadImages("bobbleT1", "bobbleT2", "bobbleT3", "bobbleT4", "bobbleT5", "bobbleT6");
         /// <summary>
         /// Pelaajan alas animaatio.
         /// </summary>
         private Image[] bobbleE = LoadImages("bobbleE1", "bobbleE2", "bobbleE3", "bobbleE4", "bobbleE5", "bobbleE6");
+        private String suunta = "";
 
 
 
 
         /// <summary>
-        /// Alustaa pelin ja näyttää päävalikon.
+        /// Alustaa pelin ja nï¿½yttï¿½ï¿½ pï¿½ï¿½valikon.
         /// </summary>
 
         public override void Begin()
@@ -172,7 +173,7 @@ namespace ProjectPatiKuti
             Add(aloitus);
         }
         /// <summary>
-        /// Aloittaa pelin luomalla pelaajan, viholliset ja käyttöliittymän elementit.
+        /// Aloittaa pelin luomalla pelaajan, viholliset ja kï¿½yttï¿½liittymï¿½n elementit.
         /// </summary>
         public void aloitaPeli()
         {
@@ -197,11 +198,11 @@ namespace ProjectPatiKuti
             Add(vihut);
         }
         /// <summary>
-        /// Luo vihollisten määrän laskurin.
+        /// Luo vihollisten mï¿½ï¿½rï¿½n laskurin.
         /// </summary>
         void LuoVihuLaskuri()
         {
-            vihujaNyt = new DoubleMeter(vihujaHengissä);
+            vihujaNyt = new DoubleMeter(vihujaHengissÃ¤);
             vihujaNyt.MaxValue = vihuCount;
             ProgressBar vihujapalkki = new ProgressBar(150, 20);
             vihujapalkki.X = (Screen.Width / 2) - 150;
@@ -226,14 +227,14 @@ namespace ProjectPatiKuti
             vihu.Animation.Start();
             vihu.Tag = "vihu";
             AssaultRifle ase = new AssaultRifle(0, 0);
-            Vector syntymäPaikka;
+            Vector syntymÃ¤Paikka;
             do
             {
                 double x = RandomGen.NextDouble(Level.Left + 100, Level.Right - 100);
                 double y = RandomGen.NextDouble(Level.Bottom + 100, Level.Top - 100);
-                syntymäPaikka = new Vector(x, y);
-            } while (Vector.Distance(syntymäPaikka, pelaaja.Position) < 500);
-            vihu.Position = syntymäPaikka;
+                syntymÃ¤Paikka = new Vector(x, y);
+            } while (Vector.Distance(syntymÃ¤Paikka, pelaaja.Position) < 500);
+            vihu.Position = syntymÃ¤Paikka;
             ase.X = vihu.X;
             ase.Y = vihu.Y;
             ase.Tag = "weapon";
@@ -241,7 +242,7 @@ namespace ProjectPatiKuti
             Add(vihu);
             vihu.Add(ase);
             vihuCount += 1;
-            vihujaHengissä += 1;
+            vihujaHengissÃ¤ += 1;
             Timer.CreateAndStart(1, delegate
             {
                 vihuTahtaa();
@@ -285,7 +286,7 @@ namespace ProjectPatiKuti
 
         }
         /// <summary>
-        /// Luo pelaajan "elämän" mittarin.
+        /// Luo pelaajan "elï¿½mï¿½n" mittarin.
         /// </summary>
         private void LuoElamalaskuri()
         {
@@ -310,25 +311,26 @@ namespace ProjectPatiKuti
 
         }
         /// <summary>
-        /// Lisää nappuloille toiminnot.
+        /// Lisï¿½ï¿½ nappuloille toiminnot.
         /// </summary>
         private void lisaaOhjaimet()
         {
             Keyboard.Listen(Jypeli.Key.W, ButtonState.Pressed, liiku, "move", new Vector(0, 500 * speed));
             Keyboard.Listen(Jypeli.Key.W, ButtonState.Released, liiku, "move", new Vector(0, -500 * speed));
-            Keyboard.Listen(Jypeli.Key.W, ButtonState.Pressed, () => anim(bobbleT), "move");
+            //Keyboard.Listen(Jypeli.Key.W, ButtonState.Pressed, () => anim(bobbleT), "move");
             Keyboard.Listen(Jypeli.Key.D, ButtonState.Pressed, liiku, "move", new Vector(500 * speed, 0));
             Keyboard.Listen(Jypeli.Key.D, ButtonState.Released, liiku, "move", new Vector(-500 * speed, 0));
-            Keyboard.Listen(Jypeli.Key.D, ButtonState.Pressed, () => anim(bobbleO), "move");
+            //Keyboard.Listen(Jypeli.Key.D, ButtonState.Pressed, () => anim(bobbleO), "move");
             Keyboard.Listen(Jypeli.Key.S, ButtonState.Pressed, liiku, "move", new Vector(0, -500 * speed));
             Keyboard.Listen(Jypeli.Key.S, ButtonState.Released, liiku, "move", new Vector(0, 500 * speed));
-            Keyboard.Listen(Jypeli.Key.S, ButtonState.Pressed, () => anim(bobbleE), "move");
+            //Keyboard.Listen(Jypeli.Key.S, ButtonState.Pressed, () => anim(bobbleE), "move");
             Keyboard.Listen(Jypeli.Key.A, ButtonState.Pressed, liiku, "move", new Vector(-500 * speed, 0));
             Keyboard.Listen(Jypeli.Key.A, ButtonState.Released, liiku, "move", new Vector(500 * speed, 0));
-            Keyboard.Listen(Jypeli.Key.A, ButtonState.Pressed, () => anim(bobbleV), "move");
+            //Keyboard.Listen(Jypeli.Key.A, ButtonState.Pressed, () => anim(bobbleV), "move");
             Keyboard.Listen(Jypeli.Key.Q, ButtonState.Down, delegate { if (Camera.ZoomFactor > 0.5) { Camera.ZoomFactor -= 0.01; } }, "Zoom out");
             Keyboard.Listen(Jypeli.Key.E, ButtonState.Down, delegate { if (Camera.ZoomFactor < 1) { Camera.ZoomFactor += 0.01; } }, "Zoom in");
             Mouse.Listen(Jypeli.MouseButton.Left, ButtonState.Down, ammu, "fire", 0);
+            Keyboard.Listen((Jypeli.Key.Enter), ButtonState.Pressed, PlayPlayerAnimation, "test");
             Mouse.ListenMovement(0.1, tahtaa, "aim");
             Keyboard.Listen(Jypeli.Key.Space, ButtonState.Pressed, dash, "dash");
             Keyboard.Listen(Jypeli.Key.Escape, ButtonState.Pressed, menu, "menu");
@@ -337,27 +339,34 @@ namespace ProjectPatiKuti
         /// Luo pelaajan liikkeen animaation.
         /// </summary>
         /// <param name="suunta">Animaation suunta.</param>
-        private void anim(Image[] suunta)
+        
+        
+        private void anim()
         {
-            if (pelaaja.Velocity.Magnitude > 0)
-            {
-                pelaaja.Animation = new Animation(suunta);
-                pelaaja.Animation.FPS = 10;
-                pelaaja.Animation.Start();
-            }
-            else
-            {
-                pelaaja.Animation?.Stop();
-            }
-        }
+            var vel = pelaaja.Velocity;
+            if (vel.Magnitude <= 0) return;
 
+            // Only switch on horizontal input
+            if (vel.X > 0 && suunta != "oikea")
+            {
+                pelaaja.Animation = new Animation(bobbleO) { FPS = 10 };
+                suunta = "oikea";
+            }
+            else if (vel.X < 0 && suunta != "vasen")
+            {
+                pelaaja.Animation = new Animation(bobbleV) { FPS = 10 };
+                suunta = "vasen";
+            }
+
+            PlayPlayerAnimation();
+        }
         
 
 
         
         
         /// <summary>
-        /// Näyttää pelin valikon. Luo myös valikon toiminnallisuuden.
+        /// Nï¿½yttï¿½ï¿½ pelin valikon. Luo myï¿½s valikon toiminnallisuuden.
         /// </summary>
         public void menu()
         {
@@ -383,8 +392,8 @@ namespace ProjectPatiKuti
             if (kohde.Tag.ToString() == "vihu")
             {
                 kohde.Destroy();
-                vihujaHengissä -= 1;
-                vihujaNyt.Value = vihujaHengissä;
+                vihujaHengissÃ¤ -= 1;
+                vihujaNyt.Value = vihujaHengissÃ¤;
                 if (LS > 0)
                 {
                     pelaajaHp.Value += LS;
@@ -393,7 +402,7 @@ namespace ProjectPatiKuti
                         pelaajaHp.Value = pelaajaHp.MaxValue;
                     }
                 }
-                if (vihujaHengissä == 0)
+                if (vihujaHengissÃ¤ == 0)
                 {
                     vihuCount = 0;
                     wave += 1;
@@ -403,7 +412,7 @@ namespace ProjectPatiKuti
             }
         }
         /// <summary>
-        /// Luo uuden aallon ja antaa pelaajalle päivitysvaihtoehdot.
+        /// Luo uuden aallon ja antaa pelaajalle pï¿½ivitysvaihtoehdot.
         /// </summary>
         /// <param name="wave">Nykyinen aalto.</param>
         private void uusiWave(int wave)
@@ -478,10 +487,10 @@ namespace ProjectPatiKuti
 
         }
         /// <summary>
-        /// Antaa pelaajalle päivityksen, joka sopii harvinaisuuteen.
+        /// Antaa pelaajalle pï¿½ivityksen, joka sopii harvinaisuuteen.
         /// </summary>
-        /// <param name="upgrade">Päivityksen nimi.</param>
-        /// <param name="rarity">Päivityksen harvinaisuus.</param>
+        /// <param name="upgrade">Pï¿½ivityksen nimi.</param>
+        /// <param name="rarity">Pï¿½ivityksen harvinaisuus.</param>
         private void ApplyUpgrade(string upgrade, string rarity)
         {
             if (upgrade == "Speed")
@@ -669,11 +678,11 @@ namespace ProjectPatiKuti
         {
             wave = 1;
             vihuHp = 0;
-            vihujaHengissä = 0;
+            vihujaHengissÃ¤ = 0;
             vihuCount = 0;
         }
         /// <summary>
-        /// Käsittelee pelaajan tähtäämisen.
+        /// Kï¿½sittelee pelaajan tï¿½htï¿½ï¿½misen.
         /// </summary>
         private void tahtaa()
         {
@@ -681,7 +690,7 @@ namespace ProjectPatiKuti
             fireball.Angle = suunta.Angle;
         }
         /// <summary>
-        /// Käsittelee pelaajan ampumisen.
+        /// Kï¿½sittelee pelaajan ampumisen.
         /// </summary>
         /// <param name="suunta">Ampumisen suunta.</param>
         private void ammu(int suunta)
@@ -701,7 +710,7 @@ namespace ProjectPatiKuti
             }
         }
         /// <summary>
-        /// Käsittelee vihollisen tähtäämisen pelaajaan.
+        /// Kï¿½sittelee vihollisen tï¿½htï¿½ï¿½misen pelaajaan.
         /// </summary>
         private void vihuTahtaa()
         {
@@ -715,9 +724,17 @@ namespace ProjectPatiKuti
                 }
             }
         }
+        private void PlayPlayerAnimation()
+        {
+            if (pelaaja.Animation != null && !pelaaja.Animation.IsPlaying)
+            {
+                pelaaja.Animation.Start();
+            }
+        }
         /// <summary>
-        /// Käsittelee pelaajan dash:in.
+        /// Kï¿½sittelee pelaajan dash:in.
         /// </summary>
+        /// 
         public void dash()
         {
             if (!canDash) return;
@@ -730,24 +747,25 @@ namespace ProjectPatiKuti
             Timer.SingleShot(dashDelay, () => canDash = true);
         }
         /// <summary>
-        /// Käsittelee pelaajan liikkumisen.
+        /// Kï¿½sittelee pelaajan liikkumisen.
         /// </summary>
         /// <param name="nopeus">Liikkumisnopeus.</param>
         private void liiku(Vector nopeus)
         {
-            if ((Math.Abs(pelaajanNopeus.X) == 250*speed) && (Math.Abs(pelaajanNopeus.Y) == 250*speed))
+            if ((Math.Abs(pelaajanNopeus.X) == 250 * speed) && (Math.Abs(pelaajanNopeus.Y) == 250 * speed))
             {
                 pelaajanNopeus = pelaajanNopeus * 2;
             }
             pelaajanNopeus += nopeus;
-            if ((Math.Abs(pelaajanNopeus.X) == 500*speed) && (Math.Abs(pelaajanNopeus.Y) == 500*speed))
+            if ((Math.Abs(pelaajanNopeus.X) == 500 * speed) && (Math.Abs(pelaajanNopeus.Y) == 500 * speed))
             {
                 pelaajanNopeus = pelaajanNopeus / 2;
             }
             pelaaja.Velocity = pelaajanNopeus;
+            
         }
         /// <summary>
-        /// Luo kompassin, joka näyttää lähimmän vihollisen suunnan.
+        /// Luo kompassin, joka nï¿½yttï¿½ï¿½ lï¿½himmï¿½n vihollisen suunnan.
         /// </summary>
         private void kompassi()
         {
@@ -756,46 +774,48 @@ namespace ProjectPatiKuti
             Add(kompassi);
             kompassi.Position = new Vector(Screen.Left + 100, Screen.Top - 100);
 
-            Timer.SingleShot(0.1, () => päivitäKompassi(kompassi));
+            Timer.SingleShot(0.1, () => pÃ¤ivitÃ¤Kompassi(kompassi));
         }
         /// <summary>
-        /// Päivittää kompassin osoittamaan lähimmän vihollisen suuntaan.
+        /// Pï¿½ivittï¿½ï¿½ kompassin osoittamaan lï¿½himmï¿½n vihollisen suuntaan.
         /// </summary>
         /// <param name="kompassi">Kompassi-widget.</param>
-        private void päivitäKompassi(Widget kompassi)
+        private void pÃ¤ivitÃ¤Kompassi(Widget kompassi)
         {
-            if (pelaaja.Velocity.Magnitude < 0)
+            
+            anim();
+            PlayPlayerAnimation();
+            if (pelaaja.Velocity.Magnitude == 0)
             {
                 pelaaja.Animation.Stop();
             }
-            anim(bobbleO);
-            GameObject lähinVihu = löydäLähinVihu();
-            if (lähinVihu != null)
+            GameObject lÃ¤hinVihu = lÃ¶ydÃ¤LÃ¤hinVihu();
+            if (lÃ¤hinVihu != null)
             {
-                Vector suunta = (lähinVihu.Position - pelaaja.Position).Normalize();
+                Vector suunta = (lÃ¤hinVihu.Position - pelaaja.Position).Normalize();
                 kompassi.Angle = suunta.Angle;
             }
-            Timer.SingleShot(0.1, () => päivitäKompassi(kompassi));
+            Timer.SingleShot(0.1, () => pÃ¤ivitÃ¤Kompassi(kompassi));
 
         }
         /// <summary>
-        /// Etsii lähimmän vihollisen pelaajasta.
+        /// Etsii lï¿½himmï¿½n vihollisen pelaajasta.
         /// </summary>
-        /// <returns>Lähin vihollinen.</returns>
-        private GameObject löydäLähinVihu()
+        /// <returns>Lï¿½hin vihollinen.</returns>
+        private GameObject lÃ¶ydÃ¤LÃ¤hinVihu()
         {
-            GameObject lähinVihu = null;
-            double lähinEtäisyys = double.MaxValue;
+            GameObject lÃ¤hinVihu = null;
+            double lÃ¤hinEtÃ¤isyys = double.MaxValue;
             foreach (var vihu in GetObjectsWithTag("vihu"))
             {
-                double etäisyys = (vihu.Position - pelaaja.Position).Magnitude;
-                if (etäisyys < lähinEtäisyys)
+                double etÃ¤isyys = (vihu.Position - pelaaja.Position).Magnitude;
+                if (etÃ¤isyys < lÃ¤hinEtÃ¤isyys)
                 {
-                    lähinEtäisyys = etäisyys;
-                    lähinVihu = vihu;
+                    lÃ¤hinEtÃ¤isyys = etÃ¤isyys;
+                    lÃ¤hinVihu = vihu;
                 }
             }
-            return lähinVihu;
+            return lÃ¤hinVihu;
         }
         /// <summary>
         /// Arpoo harvinaisuuden.
@@ -820,10 +840,10 @@ namespace ProjectPatiKuti
             }
         }
         /// <summary>
-        /// Valitsee päivityksen harvinaisuuden perusteella.
+        /// Valitsee pï¿½ivityksen harvinaisuuden perusteella.
         /// </summary>
         /// <param name="rarity">Harvinaisuus.</param>
-        /// <returns>Päivityksen nimi.</returns>
+        /// <returns>Pï¿½ivityksen nimi.</returns>
         private string upgrade(string rarity)
         {
             int d = 6;
