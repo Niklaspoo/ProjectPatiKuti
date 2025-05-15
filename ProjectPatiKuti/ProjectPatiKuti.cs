@@ -2,9 +2,7 @@ using Jypeli;
 using Jypeli.Assets;
 using Jypeli.Controls;
 using Jypeli.Widgets;
-using Silk.NET.Input;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace ProjectPatiKuti
@@ -136,7 +134,14 @@ namespace ProjectPatiKuti
         /// Pelaajan vasemmalle animaatio.
         /// </summary>
         private Image[] bobbleV = LoadImages("bobbleV1", "bobbleV2", "bobbleV3", "bobbleV4", "bobbleV5", "bobbleV6");
+        /// <summary>
+        /// animaatiosuunta apumuuttuja hommeli
+        /// </summary>
         private String suunnat = "";
+        
+        private double previousScreenWidth = 0;
+        private double previousScreenHeight = 0;
+        private GameObject dashOval;
 
 
 
@@ -147,12 +152,22 @@ namespace ProjectPatiKuti
 
         public override void Begin()
         {
+            if (IsFullScreen==true)
+            {
+                IsFullScreen = true;
+            }
+
             IsFullScreen = true;
+            Level.Size = Screen.Size;
+            Level.Background.Image = LoadImage("startscreen");
+            Level.Background.FitToLevel();
             MultiSelectWindow aloitus = new MultiSelectWindow("ProjectPK", "Start a new run", "QUIT");
             aloitus.AddItemHandler(0, aloitaPeli);
             aloitus.AddItemHandler(1, Exit);
             Add(aloitus);
         }
+        
+        
         /// <summary>
         /// Aloittaa pelin luomalla pelaajan, viholliset ja käyttöliittymän elementit.
         /// </summary>
@@ -174,10 +189,17 @@ namespace ProjectPatiKuti
             kompassi();
             LuoVihuLaskuri();
             Label vihut = new Label("Enemies left:");
+            vihut.BorderColor = Color.Black;
+            vihut.Color = Color.FromHexCode("#b0affa");
+            vihut.Tag = "vihut";
             vihut.X = (Screen.Width / 2) - 150 - 155;
-            vihut.Y = Screen.Top - 20 + 3;
+            vihut.Y = Screen.Top - 20 + 5;
             Add(vihut);
+            
+            
         }
+        
+        
         /// <summary>
         /// Luo vihollisten määrän laskurin.
         /// </summary>
@@ -186,14 +208,18 @@ namespace ProjectPatiKuti
             vihujaNyt = new DoubleMeter(vihujaHengissä);
             vihujaNyt.MaxValue = vihuCount;
             ProgressBar vihujapalkki = new ProgressBar(150, 20);
+            vihujapalkki.Tag = "vihujapalkki";
             vihujapalkki.X = (Screen.Width / 2) - 150;
             vihujapalkki.Y = Screen.Top - 20;
             vihujapalkki.Angle = Angle.StraightAngle;
-            vihujapalkki.BorderColor = Color.Black;
+            vihujapalkki.BarColor = Color.FromHexCode("#700439");
+            vihujapalkki.Color = Color.Black;
             vihujapalkki.BindTo(vihujaNyt);
             Add(vihujapalkki);
             
         }
+        
+        
         /// <summary>
         /// Luo uuden vihollisen pelimaailmaan.
         /// </summary>
@@ -256,6 +282,7 @@ namespace ProjectPatiKuti
             //pelaaja.Image = bobble;
             pelaaja.CanRotate = false;
             fireball = new Cannon(0, 0);
+            fireball.IsVisible = false;
             pelaaja.Restitution = 0;
             Add(pelaaja);
             pelaaja.Add(fireball);
@@ -263,8 +290,15 @@ namespace ProjectPatiKuti
 
             lisaaOhjaimet();
             luoReunat();
-
+            dashOval = new GameObject(70, 90, Shape.Circle);
+            dashOval.Color = Color.White;
+            dashOval.Tag = "dashOval";
+            dashOval.IsVisible = false;
+            dashOval.Image = LoadImage("sproinkle");
+            pelaaja.Add(dashOval); 
         }
+        
+        
         /// <summary>
         /// Luo pelaajan "elämän" mittarin.
         /// </summary>
@@ -273,13 +307,17 @@ namespace ProjectPatiKuti
             pelaajaHp = new DoubleMeter(10);
             pelaajaHp.MaxValue = 10;
             ProgressBar elamapalkki = new ProgressBar(150, 20);
+            elamapalkki.Tag = "elamapalkki";
             elamapalkki.X = Screen.Left + 150;
             elamapalkki.Y = Screen.Top - 20;
             elamapalkki.Angle = Angle.StraightAngle;
-            elamapalkki.BorderColor = Color.Black;
+            elamapalkki.Color = Color.Black;
+            elamapalkki.BarColor = Color.FromHexCode("#1a8f39");
             elamapalkki.BindTo(pelaajaHp);
             Add(elamapalkki);
         }
+        
+        
         /// <summary>
         /// Luo pelimaailman reunat.
         /// </summary>
@@ -290,32 +328,91 @@ namespace ProjectPatiKuti
             Level.CreateBorders(0, true);
 
         }
+        
+        
         /// <summary>
         /// Lisää nappuloille toiminnot.
         /// </summary>
         private void lisaaOhjaimet()
         {
-            Keyboard.Listen(Jypeli.Key.W, ButtonState.Pressed, liiku, "move", new Vector(0, 500 * speed));
-            Keyboard.Listen(Jypeli.Key.W, ButtonState.Released, liiku, "move", new Vector(0, -500 * speed));
-            //Keyboard.Listen(Jypeli.Key.W, ButtonState.Pressed, () => anim(bobbleT), "move");
-            Keyboard.Listen(Jypeli.Key.D, ButtonState.Pressed, liiku, "move", new Vector(500 * speed, 0));
-            Keyboard.Listen(Jypeli.Key.D, ButtonState.Released, liiku, "move", new Vector(-500 * speed, 0));
-            //Keyboard.Listen(Jypeli.Key.D, ButtonState.Pressed, () => anim(bobbleO), "move");
-            Keyboard.Listen(Jypeli.Key.S, ButtonState.Pressed, liiku, "move", new Vector(0, -500 * speed));
-            Keyboard.Listen(Jypeli.Key.S, ButtonState.Released, liiku, "move", new Vector(0, 500 * speed));
-            //Keyboard.Listen(Jypeli.Key.S, ButtonState.Pressed, () => anim(bobbleE), "move");
-            Keyboard.Listen(Jypeli.Key.A, ButtonState.Pressed, liiku, "move", new Vector(-500 * speed, 0));
-            Keyboard.Listen(Jypeli.Key.A, ButtonState.Released, liiku, "move", new Vector(500 * speed, 0));
-            //Keyboard.Listen(Jypeli.Key.A, ButtonState.Pressed, () => anim(bobbleV), "move");
-            Keyboard.Listen(Jypeli.Key.Q, ButtonState.Down, delegate { if (Camera.ZoomFactor > 0.5) { Camera.ZoomFactor -= 0.01; } }, "Zoom out");
-            Keyboard.Listen(Jypeli.Key.E, ButtonState.Down, delegate { if (Camera.ZoomFactor < 1) { Camera.ZoomFactor += 0.01; } }, "Zoom in");
-            Mouse.Listen(Jypeli.MouseButton.Left, ButtonState.Down, ammu, "fire", 0);
-            Keyboard.Listen((Jypeli.Key.Enter), ButtonState.Pressed, PlayPlayerAnimation, "test");
+            Keyboard.Listen(Key.W, ButtonState.Pressed, liiku, "move", new Vector(0, 500 * speed));
+            Keyboard.Listen(Key.W, ButtonState.Released, liiku, "move", new Vector(0, -500 * speed));
+            Keyboard.Listen(Key.D, ButtonState.Pressed, liiku, "move", new Vector(500 * speed, 0));
+            Keyboard.Listen(Key.D, ButtonState.Released, liiku, "move", new Vector(-500 * speed, 0));
+            Keyboard.Listen(Key.S, ButtonState.Pressed, liiku, "move", new Vector(0, -500 * speed));
+            Keyboard.Listen(Key.S, ButtonState.Released, liiku, "move", new Vector(0, 500 * speed));
+            Keyboard.Listen(Key.A, ButtonState.Pressed, liiku, "move", new Vector(-500 * speed, 0));
+            Keyboard.Listen(Key.A, ButtonState.Released, liiku, "move", new Vector(500 * speed, 0));
+            Keyboard.Listen(Key.F11, ButtonState.Released, fullScreen,"fs");
+            Keyboard.Listen(Key.Q, ButtonState.Down, delegate { if (Camera.ZoomFactor > 0.5) { Camera.ZoomFactor -= 0.01; } }, "Zoom out");
+            Keyboard.Listen(Key.E, ButtonState.Down, delegate { if (Camera.ZoomFactor < 1) { Camera.ZoomFactor += 0.01; } }, "Zoom in");
+            Mouse.Listen(MouseButton.Left, ButtonState.Down, ammu, "fire", 0);
+            Keyboard.Listen(Key.M, ButtonState.Released, delegate
+            {
+                if (MediaPlayer.Volume > 0.0)
+                {
+                    MediaPlayer.Volume = 0.0;
+                }
+                else
+                {
+                    MediaPlayer.Volume = 1.0;
+                }
+                
+            }, "Pause music");
             Mouse.ListenMovement(0.1, tahtaa, "aim");
-            Keyboard.Listen(Jypeli.Key.Space, ButtonState.Pressed, dash, "dash");
-            Keyboard.Listen(Jypeli.Key.Escape, ButtonState.Pressed, menu, "menu");
+            Keyboard.Listen(Key.Space, ButtonState.Pressed, dash, "dash");
+            Keyboard.Listen(Key.Escape, ButtonState.Pressed, menu, "menu");
         }
 
+        private void fullScreen()
+        {
+            if (IsFullScreen)
+            {
+                IsFullScreen = false;
+            }
+            else
+            {
+                IsFullScreen = true;
+            }
+            skaalaaUi();
+        }
+        
+
+        private void skaalaaUi()
+        {
+            var elamapalkki = GetObjectsWithTag("elamapalkki")
+                .Cast<ProgressBar>().FirstOrDefault();
+            if (elamapalkki != null)
+            {
+                elamapalkki.X = Screen.Left + 150;
+                elamapalkki.Y = Screen.Top - 20;
+            }
+            
+            var vihujapalkki = GetObjectsWithTag("vihujapalkki")
+                .Cast<ProgressBar>().FirstOrDefault();
+            if (vihujapalkki != null)
+            {
+                vihujapalkki.X = (Screen.Width / 2) - 150;
+                vihujapalkki.Y = Screen.Top - 20;
+            }
+            
+            var kompassi = GetObjectsWithTag("kompassi")
+                .Cast<Widget>().FirstOrDefault();
+            if (kompassi != null)
+            {
+                kompassi.Position = new Vector(Screen.Left + 100, Screen.Top - 100);
+            }
+            
+            var vihutLabel = GetObjectsWithTag("vihut")
+                .Cast<Label>().FirstOrDefault();
+            if (vihutLabel != null)
+            {
+                vihutLabel.X = (Screen.Width / 2) - 150 - 155;
+                vihutLabel.Y = Screen.Top - 20 + 3;
+            }
+        }
+        
+        
         /// <summary>
         /// Luo pelaajan liikkeen animaation.
         /// </summary>
@@ -339,9 +436,6 @@ namespace ProjectPatiKuti
             PlayPlayerAnimation();
         }
         
-
-
-        
         
         /// <summary>
         /// Näyttää pelin valikon. Luo myös valikon toiminnallisuuden.
@@ -354,7 +448,24 @@ namespace ProjectPatiKuti
             pelaajanNopeus = new Vector(0, 0);
             MultiSelectWindow menu = new MultiSelectWindow("Menu", "Resume", "Keybinds", "Quit");
             menu.AddItemHandler(0, delegate { IsPaused = false; lisaaOhjaimet(); });
-            menu.AddItemHandler(1, delegate { IsPaused = false; lisaaOhjaimet(); MessageDisplay.Add("WASD: move, LMB: shoot, SPACE: dash, Q & E: zoom");  });
+            menu.AddItemHandler(1, delegate {
+                MultiSelectWindow keybindsWindow = new MultiSelectWindow(
+                    "Keybinds",
+                    "WASD: move",
+                    "LMB: shoot",
+                    "SPACE: dash",
+                    "Q & E: zoom",
+                    "M: Mute music",
+                    "OK"
+                );
+                keybindsWindow.AddItemHandler(0, () => { IsPaused = false; lisaaOhjaimet(); });
+                keybindsWindow.AddItemHandler(1, () => { IsPaused = false; lisaaOhjaimet(); });
+                keybindsWindow.AddItemHandler(2, () => { IsPaused = false; lisaaOhjaimet(); });
+                keybindsWindow.AddItemHandler(3, () => { IsPaused = false; lisaaOhjaimet(); });
+                keybindsWindow.AddItemHandler(4, () => { IsPaused = false; lisaaOhjaimet(); });
+                keybindsWindow.AddItemHandler(5, () => { IsPaused = false; lisaaOhjaimet(); });
+                Add(keybindsWindow);
+            });
             menu.AddItemHandler(2, Exit);
             Add(menu);
         }
@@ -389,63 +500,51 @@ namespace ProjectPatiKuti
                 }
             }
         }
+        
+        
         /// <summary>
         /// Luo uuden aallon ja antaa pelaajalle päivitysvaihtoehdot.
         /// </summary>
         /// <param name="wave">Nykyinen aalto.</param>
         private void uusiWave(int wave)
         {
-            pelaajaHp.Value = pelaajaHp.MaxValue;
+            
             ClearControls();
             IsPaused = true;
             pelaaja.Velocity = new Vector(0, 0);
             pelaajanNopeus = new Vector(0, 0);
+            canDash = true;
+            kuolematon = false;
+            pelaajaHp.Value = pelaajaHp.MaxValue;
             harvinaisuus1 = Rarity();
             harvinaisuus2 = Rarity();
             upgrade1 = upgrade(harvinaisuus1);
-            upgrade2 = upgrade(harvinaisuus2);
+            while (upgrade1 != upgrade(harvinaisuus2))
+            {
+                upgrade2 = upgrade(harvinaisuus2);
+            }
             MultiSelectWindow uusWave = new MultiSelectWindow("Wave " + (wave - 1) + " complete. Choose your upgrade!", harvinaisuus1+": "+upgrade1, harvinaisuus2 + ": " + upgrade2);
             PushButton[] nappulat = uusWave.Buttons;
             if (harvinaisuus1 == "Legendary")
-            {
-                nappulat[0].Color = Color.Gold;
-            }
+            { nappulat[0].Color = Color.Gold; }
             if (harvinaisuus2 == "Legendary")
-            {
-                nappulat[1].Color = Color.Gold;
-            }
+            { nappulat[1].Color = Color.Gold; }
             if (harvinaisuus1 == "Epic")
-            {
-                nappulat[0].Color = Color.Purple;
-            }
+            { nappulat[0].Color = Color.Purple; }
             if (harvinaisuus2 == "Epic")
-            {
-                nappulat[1].Color = Color.Purple;
-            }
+            { nappulat[1].Color = Color.Purple; }
             if (harvinaisuus1 == "Rare")
-            {
-                nappulat[0].Color = Color.Blue;
-            }
+            { nappulat[0].Color = Color.Blue; }
             if (harvinaisuus2 == "Rare")
-            {
-                nappulat[1].Color = Color.Blue;
-            }
+            { nappulat[1].Color = Color.Blue; }
             if (harvinaisuus1 == "Uncommon")
-            {
-                nappulat[0].Color = Color.Green;
-            }
+            { nappulat[0].Color = Color.Green; }
             if (harvinaisuus2 == "Uncommon")
-            {
-                nappulat[1].Color = Color.Green;
-            }
+            { nappulat[1].Color = Color.Green; }
             if (harvinaisuus1 == "Common")
-            {
-                nappulat[0].Color = Color.Gray;
-            }
+            { nappulat[0].Color = Color.Gray; }
             if (harvinaisuus2 == "Common")
-            {
-                nappulat[1].Color = Color.Gray;
-            }
+            { nappulat[1].Color = Color.Gray; }
 
             uusWave.DefaultCancel = -1;
             uusWave.AddItemHandler(0, delegate { ApplyUpgrade(upgrade1, harvinaisuus1); pelaaja.Velocity = new Vector(0, 0);
@@ -464,11 +563,13 @@ namespace ProjectPatiKuti
             }
 
         }
+        
+        
         /// <summary>
         /// Antaa pelaajalle päivityksen, joka sopii harvinaisuuteen.
         /// </summary>
-        /// <param name="upgrade">P�ivityksen nimi.</param>
-        /// <param name="rarity">P�ivityksen harvinaisuus.</param>
+        /// <param name="upgrade">Päivityksen nimi.</param>
+        /// <param name="rarity">Päivityksen harvinaisuus.</param>
         private void ApplyUpgrade(string upgrade, string rarity)
         {
             if (upgrade == "Speed")
@@ -610,6 +711,8 @@ namespace ProjectPatiKuti
 
 
         }
+        
+        
         /// <summary>
         /// Tarkistaa ammuksen osumisen kohteeseen.
         /// </summary>
@@ -648,6 +751,8 @@ namespace ProjectPatiKuti
                 }
             }
         }
+        
+        
         /// <summary>
         /// Nollaa pelin tilan.
         /// </summary>
@@ -657,6 +762,8 @@ namespace ProjectPatiKuti
             vihujaHengissä = 0;
             vihuCount = 0;
         }
+        
+        
         /// <summary>
         /// Käsittelee pelaajan tähtäämisen.
         /// </summary>
@@ -665,6 +772,8 @@ namespace ProjectPatiKuti
             Vector suunta = (Mouse.PositionOnWorld - fireball.AbsolutePosition).Normalize();
             fireball.Angle = suunta.Angle;
         }
+        
+        
         /// <summary>
         /// K�sittelee pelaajan ampumisen.
         /// </summary>
@@ -685,6 +794,8 @@ namespace ProjectPatiKuti
                 //ammus.MaximumLifetime = TimeSpan.FromSeconds(2.0);
             }
         }
+        
+        
         /// <summary>
         /// Käsittelee vihollisen tähtäämisen pelaajaan.
         /// </summary>
@@ -700,6 +811,8 @@ namespace ProjectPatiKuti
                 }
             }
         }
+        
+        
         private void PlayPlayerAnimation()
         {
             if (pelaaja.Animation != null && !pelaaja.Animation.IsPlaying)
@@ -707,22 +820,35 @@ namespace ProjectPatiKuti
                 pelaaja.Animation.Start();
             }
         }
+        
+        
         /// <summary>
         /// Käsittelee pelaajan dash:in.
         /// </summary>
         /// 
         public void dash()
         {
-            if (!canDash) return;
+            if (!canDash || IsPaused || pelaaja == null || pelaaja.IsDestroyed) return;
             canDash = false;
             pelaaja.Push(pelaajanNopeus * 200);
             kuolematon = true;
-            Timer.SingleShot(dashTime, () => pelaaja.Velocity = pelaajanNopeus);
-            Timer.SingleShot(dashTime, () => kuolematon = false);
-            if (dashDelay < 0.05) { dashDelay = 0.05; }
+            dashOval.IsVisible = true; // Show oval
 
-            Timer.SingleShot(dashDelay, () => canDash = true);
+            Timer.SingleShot(dashTime, () => {
+                if (!IsPaused && pelaaja != null && !pelaaja.IsDestroyed)
+                    pelaaja.Velocity = pelaajanNopeus;
+                dashOval.IsVisible = false; // Hide oval after dash
+            });
+            Timer.SingleShot(dashTime, () => {
+                if (!IsPaused) kuolematon = false;
+            });
+            if (dashDelay < 0.05) { dashDelay = 0.05; }
+            Timer.SingleShot(dashDelay, () => {
+                if (!IsPaused) canDash = true;
+            });
         }
+        
+        
         /// <summary>
         /// Käsittelee pelaajan liikkumisen.
         /// </summary>
@@ -741,18 +867,24 @@ namespace ProjectPatiKuti
             pelaaja.Velocity = pelaajanNopeus;
             
         }
+        
+        
         /// <summary>
         /// Luo kompassin, joka näyttää lähimmän vihollisen suunnan.
         /// </summary>
         private void kompassi()
         {
+            
             Widget kompassi = new Widget(100, 100);
+            kompassi.Tag = "kompassi";
             kompassi.Image = kompassikuva;
             Add(kompassi);
             kompassi.Position = new Vector(Screen.Left + 100, Screen.Top - 100);
 
             Timer.SingleShot(0.1, () => päivitäKompassi(kompassi));
         }
+        
+        
         /// <summary>
         /// Päivittää kompassin osoittamaan lähimmän vihollisen suuntaan.
         /// </summary>
@@ -773,8 +905,16 @@ namespace ProjectPatiKuti
                 kompassi.Angle = suunta.Angle;
             }
             Timer.SingleShot(0.1, () => päivitäKompassi(kompassi));
+            if (Screen.Width != previousScreenWidth || Screen.Height != previousScreenHeight)
+            {
+                skaalaaUi();
+                previousScreenWidth = Screen.Width;
+                previousScreenHeight = Screen.Height;
+            }
 
         }
+        
+        
         /// <summary>
         /// Etsii lähimmän vihollisen pelaajasta.
         /// </summary>
@@ -794,6 +934,8 @@ namespace ProjectPatiKuti
             }
             return lähinVihu;
         }
+        
+        
         /// <summary>
         /// Arpoo harvinaisuuden.
         /// </summary>
@@ -816,6 +958,8 @@ namespace ProjectPatiKuti
 
             }
         }
+        
+        
         /// <summary>
         /// Valitsee päivityksen harvinaisuuden perusteella.
         /// </summary>
@@ -834,7 +978,7 @@ namespace ProjectPatiKuti
                 if (i == 2) { return "Bullet speed"; }
                 if (i == 3) { return "Firerate"; }
                 if (i == 4) { return "Health"; }
-                if (i == 5) {return "Dash delay"; }
+                if (i == 5) { return "Dash delay"; }
             }
             else if (rarity == "Uncommon")
             {
@@ -874,5 +1018,7 @@ namespace ProjectPatiKuti
             }
             return "Speed";
         }
+        
+        
     }
 }
