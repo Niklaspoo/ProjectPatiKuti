@@ -286,7 +286,6 @@ namespace ProjectPatiKuti
             Add(pelaaja);
             pelaaja.Add(fireball);
             fireball.ProjectileCollision = fireballOsui;
-
             lisaaOhjaimet();
             luoReunat();
             dashOval = new GameObject(70, 90, Shape.Circle);
