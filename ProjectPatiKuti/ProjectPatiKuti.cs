@@ -135,12 +135,20 @@ namespace ProjectPatiKuti
         /// </summary>
         private Image[] bobbleV = LoadImages("bobbleV1", "bobbleV2", "bobbleV3", "bobbleV4", "bobbleV5", "bobbleV6");
         /// <summary>
-        /// animaatiosuunta apumuuttuja hommeli
+        /// Animaatiosuunnan apumuuttuja.
         /// </summary>
         private String suunnat = "";
-        
+        /// <summary>
+        /// Viimeisin näytön leveys.
+        /// </summary>
         private double previousScreenWidth = 0;
+        /// <summary>
+        /// Viimeisin näytön korkeus.
+        /// </summary>
         private double previousScreenHeight = 0;
+        /// <summary>
+        /// Visualisoi i-framet/dash:in ovaali
+        /// </summary>
         private GameObject dashOval;
 
 
@@ -361,7 +369,9 @@ namespace ProjectPatiKuti
             Keyboard.Listen(Key.Space, ButtonState.Pressed, dash, "dash");
             Keyboard.Listen(Key.Escape, ButtonState.Pressed, menu, "menu");
         }
-
+        /// <summary>
+        /// Tarkistaa onko peli koko näytön tilassa.
+        /// </summary>
         private void fullScreen()
         {
             if (IsFullScreen)
@@ -375,7 +385,9 @@ namespace ProjectPatiKuti
             skaalaaUi();
         }
         
-
+        /// <summary>
+        /// Skaalaa käyttöliittymä elementtien koot peli-ikkunan kokoon nähden sopiviksi. 
+        /// </summary>
         private void skaalaaUi()
         {
             var elamapalkki = GetObjectsWithTag("elamapalkki")
@@ -809,8 +821,10 @@ namespace ProjectPatiKuti
                 }
             }
         }
-        
-        
+
+        /// <summary>
+        /// Aloittaa pelaajan animaation, jos se ei ole jo käynnissä.
+        /// </summary>
         private void PlayPlayerAnimation()
         {
             if (pelaaja.Animation != null && !pelaaja.Animation.IsPlaying)
