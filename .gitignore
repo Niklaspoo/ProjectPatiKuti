@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# --- UNIGNORE specific file ---
+!ProjectPatiKuti/obj/project.assets.json
