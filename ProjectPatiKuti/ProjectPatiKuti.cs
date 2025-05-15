@@ -279,7 +279,6 @@ namespace ProjectPatiKuti
             pelaaja.Velocity = pelaajanNopeus;
             pelaaja.Position = new Vector(0, 0);
             pelaaja.Image = bobble;
-            //pelaaja.Image = bobble;
             pelaaja.CanRotate = false;
             fireball = new Cannon(0, 0);
             fireball.IsVisible = false;
