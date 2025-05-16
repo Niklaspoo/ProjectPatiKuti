@@ -8,8 +8,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="82d017f8-4c0b-4ab6-8471-19e46ce11d8c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.ProjectPatiKuti/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ProjectPatiKuti/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectPatiKuti/ProjectPatiKuti.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectPatiKuti/ProjectPatiKuti.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectPatiKuti/obj/ProjectPatiKuti.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectPatiKuti/obj/ProjectPatiKuti.csproj.nuget.dgspec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectPatiKuti/obj/ProjectPatiKuti.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectPatiKuti/obj/ProjectPatiKuti.csproj.nuget.g.props" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectPatiKuti/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectPatiKuti/obj/project.assets.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectPatiKuti/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectPatiKuti/obj/project.packagespec.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectPatiKuti/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectPatiKuti/obj/rider.project.model.nuget.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectPatiKuti/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectPatiKuti/obj/rider.project.restore.info" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,12 +45,12 @@
     &quot;assignee&quot;: &quot;Niklaspoo&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Niklaspoo/ProjectPatiKuti&quot;,
-    &quot;accountId&quot;: &quot;fedf4495-79aa-4eec-8306-1213be5a0326&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Niklaspoo/ProjectPatiKuti",
+    "accountId": "10387b78-b9e4-499b-9436-3273bd32e3e3"
   }
-}</component>
+}]]></component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -118,6 +124,7 @@
       <workItem from="1747316293521" duration="10912000" />
       <workItem from="1747328162374" duration="959000" />
       <workItem from="1747329171712" duration="879000" />
+      <workItem from="1747373078320" duration="999000" />
     </task>
     <task id="LOCAL−00001" summary="sproinkle jne">
       <option name="closed" value="true" />

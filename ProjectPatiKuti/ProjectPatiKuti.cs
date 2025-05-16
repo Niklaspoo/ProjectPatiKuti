@@ -7,10 +7,10 @@ using System.Linq;
 
 namespace ProjectPatiKuti
 {
-    /// @author gr301861
+    /// @author Niklas & Leevi
     /// @version 14.11.2024
     /// <summary>
-    /// 
+    /// Pelin pääluokka.
     /// </summary>
     public class ProjectPatiKuti : PhysicsGame
     {
@@ -141,11 +141,11 @@ namespace ProjectPatiKuti
         /// <summary>
         /// Viimeisin näytön leveys.
         /// </summary>
-        private double previousScreenWidth = 0;
+        private double previousScreenWidth;
         /// <summary>
         /// Viimeisin näytön korkeus.
         /// </summary>
-        private double previousScreenHeight = 0;
+        private double previousScreenHeight;
         /// <summary>
         /// Visualisoi i-framet/dash:in ovaali
         /// </summary>
@@ -169,10 +169,12 @@ namespace ProjectPatiKuti
             Level.Size = Screen.Size;
             Level.Background.Image = LoadImage("startscreen");
             Level.Background.FitToLevel();
+            MasterVolume = 0.1;
             MultiSelectWindow aloitus = new MultiSelectWindow("ProjectPK", "Start a new run", "QUIT");
             aloitus.AddItemHandler(0, aloitaPeli);
             aloitus.AddItemHandler(1, Exit);
             Add(aloitus);
+            
         }
         
         
